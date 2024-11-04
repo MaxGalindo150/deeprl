@@ -17,8 +17,6 @@ class ValueIterationAgent(Agent):
         :param theta: The convergence threshold.
         """
         self.env = env
-        while hasattr(self.env, 'env'):
-            self.env = self.env.env
         self.gamma = gamma
         self.theta = theta
         self.V = np.zeros(env.observation_space.n)
@@ -41,16 +39,22 @@ class ValueIterationAgent(Agent):
         
     
     def compute_q_values(self, state):
-        """"
+        """
         Compute the Q-values for all actions in a given state.
         
         :param state: The state.
         :return: List of Q-values.
         """
-        q_values = np.zeros(self.env.action_space.n)
-        for action in range(self.env.action_space.n):
-            for prob, next_state, reward, done in self.env.P[state][action]:
-                q_values[action] += prob * (reward + self.gamma * self.V[next_state])
+        underlying_env = self.env.get_underlying_env()  # Accede al entorno interno
+        q_values = np.zeros(underlying_env.action_space.n)
+
+        for action in range(underlying_env.action_space.n):
+            if hasattr(underlying_env, 'P'):  # Verifica si el entorno tiene el atributo `P`
+                for prob, next_state, reward, done in underlying_env.P[state][action]:
+                    q_values[action] += prob * (reward + self.gamma * self.V[next_state])
+            else:
+                raise AttributeError("El entorno no tiene un atributo `P` para acceder a la matriz de transición.")
+        
         return q_values
     
     def update_policy(self):
