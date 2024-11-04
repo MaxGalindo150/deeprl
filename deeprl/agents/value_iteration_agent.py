@@ -45,11 +45,11 @@ class ValueIterationAgent(Agent):
         :param state: The state.
         :return: List of Q-values.
         """
-        underlying_env = self.env.get_underlying_env()  # Accede al entorno interno
+        underlying_env = self.env.get_underlying_env()  # Get the underlying environment
         q_values = np.zeros(underlying_env.action_space.n)
 
         for action in range(underlying_env.action_space.n):
-            if hasattr(underlying_env, 'P'):  # Verifica si el entorno tiene el atributo `P`
+            if hasattr(underlying_env, 'P'):  # Check if the environment has a transition matrix
                 for prob, next_state, reward, done in underlying_env.P[state][action]:
                     q_values[action] += prob * (reward + self.gamma * self.V[next_state])
             else:
@@ -72,7 +72,7 @@ class ValueIterationAgent(Agent):
         :param state: The current state of the environment.
         :return: The selected action.
         """
-        # Asegúrate de que el estado sea un número entero  
+        # Be sure that the state is an integer
         if not isinstance(state, int):
             raise TypeError(f"Expected state to be an int, but got {type(state)}")
 
