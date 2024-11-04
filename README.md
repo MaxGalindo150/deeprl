@@ -91,4 +91,8 @@ This project is licensed under the MIT License. For more details, check the [LIC
 ## Contact
 
 Author: Maximiliano Galindo  
+<<<<<<< HEAD
 Email: maximilianogalindo7@gmail.com
+=======
+Email: maximilianogalindo7@gmail.com
+>>>>>>> ea4bf3bd94c38263422b8ffa15554819d707bd3b
