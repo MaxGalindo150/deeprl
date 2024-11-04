@@ -1,6 +1,3 @@
-Here's an English version of your `README.md` for **DeepRL**:
-
-```markdown
 # DeepRL
 
 [![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprl)
