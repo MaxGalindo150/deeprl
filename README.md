@@ -92,7 +92,3 @@ This project is licensed under the MIT License. For more details, check the [LIC
 
 Author: Maximiliano Galindo  
 Email: maximilianogalindo7@gmail.com
-
----
-
-Feel free to customize the content to better fit your library's needs or style.
