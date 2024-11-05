@@ -1,9 +1,8 @@
 from deeprl.environments import GymnasiumEnvWrapper
 from deeprl.agents import ValueIterationAgent
-
 def main():
     # Configure the FrozenLake environment with a slippery surface using GymnasiumEnvWrapper from DeepRL
-    env = GymnasiumEnvWrapper('Taxi-v3', render_mode='human')
+    env = GymnasiumEnvWrapper('FrozenLake-v1', is_slippery=False, render_mode='human')
     agent = ValueIterationAgent(env)
     agent.learn()
 
