@@ -53,9 +53,12 @@ Below are some common questions and answers about using DeepRL. If you have addi
          env = GymnasiumEnvWrapper(gym.make('MyCustomEnv-v0'))
 
 **6. Why am I seeing a performance drop during training?**
-   - Performance issues can be caused by several factors, such as:
+     - Performance issues can be caused by several factors, such as:
+     
      - Inefficient neural network architecture.
+     
      - High resource consumption in the environment.
+     
      - Suboptimal hyperparameters.
    
      Make sure to profile your code and experiment with different settings to identify bottlenecks.
