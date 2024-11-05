@@ -39,8 +39,11 @@ We are excited that you are interested in contributing to DeepRL! Contributions 
 **Coding Standards:**
 ---------------------
 To maintain code quality, please follow these guidelines:
+
 - **PEP 8**: Ensure that your code follows the Python PEP 8 style guide.
+
 - **Type hints**: Use type annotations to improve code readability and maintenance.
+
 - **Docstrings**: Document all public classes and methods using Google or NumPy style docstrings.
 
 **Running Tests:**
