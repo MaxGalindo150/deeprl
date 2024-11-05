@@ -1,17 +1,35 @@
-.. DeepRL documentation master file, created by
-   sphinx-quickstart on Mon Nov  4 18:16:28 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-DeepRL documentation
+DeepRL Documentation
 ====================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Welcome to the DeepRL documentation. DeepRL is a reinforcement learning library that facilitates the development and experimentation of algorithms in Python.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
+   installation
+   tutorials/index
+   api/index 
+   faq
+   contributing
+   changelog
+
+API Reference
+=============
+For detailed information on the modules, classes, and functions available in DeepRL, see the API Reference.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Modules:
+   :hidden:
+
+   api/agents
+   api/environments
+   api/policies
+
+Module Index
+============
+* :ref:`modindex`
+* :ref:`genindex`
+* :ref:`search`
