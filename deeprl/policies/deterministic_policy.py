@@ -1,25 +1,38 @@
+import torch
 from deeprl.policies.base_policy import BasePolicy
 
 class DeterministicPolicy(BasePolicy):
     """
-    Determinisc policy implementation.
+    Deterministic policy implementation.
     """
     
-    def __init__(self, policy_table):
+    def __init__(self, observation_space):
         """
-        Initialize the policy with a given policy table.
+        Initialize the policy.
         
-        :param policy_table: Dictionary or array-like object where policy_table[state] is the action to take in state state.
+        :param observation_space: The observation space.
         """
-        
-        self.policy_table = policy_table
-        
+        self.policy_table = torch.zeros(observation_space.n)
+    
     def select_action(self, state, *args, **kwargs):
         """
         Select an action using the deterministic policy.
         
-        param state: The state.
-        return: The action to take in the given state.
+        :param state: The state.
+        :return: The action to take in the given state.
         """
+        try:
+            return self.policy_table[state]
+        except KeyError:
+            raise KeyError(f"State {state} not found in policy_table.")
+        except IndexError:
+            raise IndexError(f"State {state} is out of range for the policy table.")
+    
+    def update_policy(self, state, value):
+        """
+        Update the policy with the given state and value.
         
-        return self.policy_table[state]
+        :param state: The state.
+        :param value: The value.
+        """
+        self.policy_table[state] = value

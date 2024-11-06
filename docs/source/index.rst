@@ -10,7 +10,7 @@ Welcome to the DeepRL documentation. DeepRL is a reinforcement learning library 
    introduction
    installation
    tutorials/index
-   api/index 
+   api/index  
    faq
    contributing
    changelog
@@ -20,13 +20,12 @@ API Reference
 For detailed information on the modules, classes, and functions available in DeepRL, see the API Reference.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API Modules:
-   :hidden:
 
-   api/agents
-   api/environments
-   api/policies
+   api/agents/index
+   api/environments/index
+   api/policies/index
 
 Module Index
 ============

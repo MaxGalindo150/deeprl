@@ -6,6 +6,6 @@ This section provides detailed information on the classes, functions, and method
    :maxdepth: 1
    :caption: API Modules:
 
-   agents
-   environments
-   policies
+   agents/index
+   environments/index
+   policies/index

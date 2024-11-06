@@ -1,10 +1,10 @@
+from deeprl.agents import PolicyIterationAgent
 from deeprl.environments import GymnasiumEnvWrapper
-from deeprl.agents import ValueIterationAgent
 
 def main():
     # Configure the FrozenLake environment with a slippery surface using GymnasiumEnvWrapper from DeepRL
     env = GymnasiumEnvWrapper('FrozenLake-v1', render_mode='human')
-    agent = ValueIterationAgent(env)
+    agent = PolicyIterationAgent(env)
     agent.learn()
 
     # Unpack the initial state and reset the environment

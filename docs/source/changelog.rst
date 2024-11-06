@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file. This projec
 **[1.0.0] - 2024-01-15**
 ------------------------
 ### Added
-- Initial release of DeepRL with `BaseAgent`, `PolicyIterationAgent`, and `ValueIterationAgent`.
+- Initial release of DeepRL with `Agent`, `PolicyIterationAgent`, and `ValueIterationAgent`.
 - Support for custom environments through `BaseEnvironment`.
 
 ### Changed
