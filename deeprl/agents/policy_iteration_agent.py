@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 import pickle
 
 from deeprl.agents.base_agent import Agent
@@ -24,7 +24,7 @@ class PolicyIterationAgent(Agent):
         self.gamma = gamma
         self.theta = theta
         self.policy = policy if policy else DeterministicPolicy(observation_space=env.observation_space)
-        self.value_table = np.zeros(env.observation_space.n)
+        self.value_table = torch.zeros(env.observation_space.n)
     def policy_evaluation(self):
         """
         Evaluate the current policy using the value iteration algorithm.
@@ -43,14 +43,15 @@ class PolicyIterationAgent(Agent):
 
         :return: None
         """
+        underlying_env = self.env.get_underlying_env()
         while True:
             delta = 0
-            for state in range(self.env.observation_space.n):
+            for state in range(underlying_env.observation_space.n):
                 v = self.value_table[state]
                 action = self.policy.select_action(state)
                 self.value_table[state] = sum([
                     prob * (reward + self.gamma * self.value_table[next_state])
-                    for prob, next_state, reward, done in self.env.P[state][action]
+                    for prob, next_state, reward, done in underlying_env.P[state][action]
                 ])
                 delta = max(delta, abs(v - self.value_table[state]))
             if delta < self.theta:
@@ -64,8 +65,8 @@ class PolicyIterationAgent(Agent):
         for state in range(self.env.observation_space.n):
             old_action = self.policy.select_action(state)
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, np.argmax(q_values))
-            if old_action != self.policy[state]:
+            self.policy.update_policy(state, torch.argmax(q_values).item())
+            if old_action != self.policy.select_action(state):
                 policy_stable = False
         return policy_stable
 
@@ -77,7 +78,7 @@ class PolicyIterationAgent(Agent):
         :return: List of Q-values.
         """
         underlying_env = self.env.get_underlying_env()  # Get the underlying environment
-        q_values = np.zeros(underlying_env.action_space.n)
+        q_values = torch.zeros(underlying_env.action_space.n)
 
         for action in range(underlying_env.action_space.n):
             if hasattr(underlying_env, 'P'):  # Check if the environment has a transition matrix
@@ -94,7 +95,7 @@ class PolicyIterationAgent(Agent):
         """
         while True:
             self.policy_evaluation()
-            if self.policy_improvement():
+            if self.update_policy():
                 break
 
     def act(self, state):
@@ -128,7 +129,7 @@ class PolicyIterationAgent(Agent):
                 if render:
                     self.env.render()
                 
-                action = int(self.act(state).item())
+                action = int(self.act(state))
                 next_state, reward, done, truncated, info = self.env.step(action)
                 total_reward += reward
                 state = next_state

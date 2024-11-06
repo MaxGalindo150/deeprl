@@ -22,7 +22,7 @@ class DeterministicPolicy(BasePolicy):
         :return: The action to take in the given state.
         """
         try:
-            return self.policy_table[state]
+            return self.policy_table[state].item()
         except KeyError:
             raise KeyError(f"State {state} not found in policy_table.")
         except IndexError:

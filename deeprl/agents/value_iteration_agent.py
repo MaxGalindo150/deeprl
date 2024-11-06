@@ -4,11 +4,6 @@ import pickle
 from deeprl.agents import Agent
 from deeprl.policies import DeterministicPolicy
 
-import logging
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 class ValueIterationAgent(Agent):
     """
     Agent that uses Value Iteration to learn the optimal policy.
@@ -32,7 +27,6 @@ class ValueIterationAgent(Agent):
         """"
         Execute the Value Iteration algorithm.
         """
-        iteration = 0
         while True:
             delta = 0
             for state in range(self.env.observation_space.n):
@@ -40,9 +34,7 @@ class ValueIterationAgent(Agent):
                 q_values = self.compute_q_values(state)
                 self.V[state] = max(q_values)
                 delta = max(delta, abs(v - self.V[state]))
-            iteration += 1
             if delta < self.theta:
-                logger.info(f"Value Iteration converged after {iteration} iterations.")
                 break
         self.update_policy()
         
@@ -139,7 +131,7 @@ class ValueIterationAgent(Agent):
                 if render:
                     self.env.render()
                 
-                action = int(self.act(state).item())
+                action = int(self.act(state))
                 next_state, reward, done, truncated, info = self.env.step(action)
                 total_reward += reward
                 state = next_state
