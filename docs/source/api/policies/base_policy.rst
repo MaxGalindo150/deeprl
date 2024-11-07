@@ -1,5 +1,6 @@
 BasePolicy
 ==========
+
 The `BasePolicy` class is an abstract base class for all policies in DeepRL. It defines the structure and common methods that specific policies should implement.
 
 .. autoclass:: deeprl.policies.BasePolicy
@@ -8,9 +9,11 @@ The `BasePolicy` class is an abstract base class for all policies in DeepRL. It 
    :show-inheritance:
 
 **Attributes**:
+
 - `select_action`: Abstract method that must be overridden by subclasses to implement action selection logic.
 
 **Usage**:
+
 `BasePolicy` is not meant to be used directly but should be inherited by other policy classes that implement specific action selection strategies. Here's an example of how to create a custom policy by inheriting from `BasePolicy`:
 
 .. code-block:: python
@@ -32,16 +35,23 @@ The `BasePolicy` class is an abstract base class for all policies in DeepRL. It 
     print(f"Selected action: {action}")
 
 **Details**:
+
 - `BasePolicy` provides a blueprint for building custom policies, ensuring consistency across different policy implementations in DeepRL.
+
 - The method `select_action(self, action_values)` must be implemented by any subclass. It takes a list or array of action values and returns the chosen action.
 
 **Best Practices**:
+
 - When designing a new policy, inherit from `BasePolicy` to maintain consistency and make your policy compatible with the rest of the DeepRL library.
+
 - Document the specific parameters and behavior of your custom `select_action` method in any subclass.
 
 **Method Summary**:
+
 - `select_action(self, action_values)`: Abstract method that needs to be implemented by subclasses to define how actions are selected based on input action values.
 
 **See Also**:
+
 - :class:`~deeprl.policies.EpsilonGreedyPolicy` for an example of a concrete policy that extends `BasePolicy`.
+
 - :class:`~deeprl.policies.SoftmaxPolicy` for another example of a policy that implements a different strategy.
