@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pickle
 
@@ -88,28 +89,31 @@ class ValueIterationAgent(Agent):
         
     def save(self, filepath):
         """
-        Save the agent's parameters (V and policy) to a file.
+        Save the agent's parameters (value table and policy) to a JSON file.
         
         :param filepath: The path to the file.
         """
+        policy_dict = {state: int(action) for state, action in enumerate(self.policy.policy_table)}
+
         data = {
-            'V': self.V,
-            'policy': self.policy
+            'value_table': self.V.tolist(),  # Convert numpy array to list
+            'policy': policy_dict
         }
-        with open(filepath, 'wb') as f:
-            pickle.dump(data, f)
+
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=4)
         print(f"Agent's parameters saved to {filepath}")
 
     def load(self, filepath):
         """
-        Load the agent's parameters (V and policy) from a file.
+        Load the agent's parameters (value table and policy) from a JSON file.
         
         :param filepath: The path to the file.
         """
-        with open(filepath, 'rb') as f:
-            data = pickle.load(f)
-        self.V = data['V']
-        self.policy = data['policy']
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+        self.V = np.array(data['value_table'])
+        self.policy.policy_table = np.array([data['policy'][str(state)] for state in range(len(data['policy']))])
         print(f"Agent's parameters loaded from {filepath}")
     
     def interact(self, num_episodes=1, render=False):

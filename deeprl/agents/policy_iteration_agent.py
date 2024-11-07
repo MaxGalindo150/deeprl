@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pickle
 
@@ -18,14 +19,10 @@ class PolicyIterationAgent(Agent):
         self.theta = theta
         self.policy = policy if policy else DeterministicPolicy(observation_space=env.observation_space)
         self.value_table = np.zeros(env.observation_space.n)
-    
+
     def policy_evaluation(self):
         """
         Evaluate the current policy using the value iteration algorithm.
-
-        This method iteratively updates the value function for each state under
-        the current policy until the value function converges. The convergence is 
-        determined by the threshold `theta`.
         """
         underlying_env = self.env.get_underlying_env()
         while True:
@@ -75,7 +72,7 @@ class PolicyIterationAgent(Agent):
 
     def policy_iteration(self):
         """
-        Execute the Policy Iteration
+        Execute the Policy Iteration algorithm.
         """
         while True:
             self.policy_evaluation()
@@ -84,20 +81,22 @@ class PolicyIterationAgent(Agent):
 
     def act(self, state):
         """
-        Selecciona la acción basada en la política actual.
+        Select an action based on the state and the current policy.
+        
+        :param state: The current state of the environment.
+        :return: The selected action.
         """
         return self.policy.select_action(state)
 
     def learn(self):
         """
-        Ejecuta el proceso de aprendizaje (iteración de política).
+        Execute the learning process (policy iteration).
         """
         self.policy_iteration()
 
     def interact(self, num_episodes=1, render=False):
         """
-        Interact with the environment following the learned policy for a given
-        number of episodes.
+        Interact with the environment following the learned policy for a given number of episodes.
         
         :param num_episodes: Number of episodes to run.
         :param render: If True, render the environment during interaction.
@@ -125,29 +124,32 @@ class PolicyIterationAgent(Agent):
                 print(f"Episode {episode + 1}: Total Reward = {total_reward}")
         
         return episode_rewards
-    
+
     def save(self, filepath):
         """
-        Save the agent's parameters (V and policy) to a file.
+        Save the agent's parameters (value table and policy) to a JSON file.
         
         :param filepath: The path to the file.
         """
+        policy_dict = {state: int(action) for state, action in enumerate(self.policy.policy_table)}
+
         data = {
-            'V': self.value_table,
-            'policy': self.policy
+            'value_table': self.value_table.tolist(),  # Convert numpy array to list
+            'policy': policy_dict
         }
-        with open(filepath, 'wb') as f:
-            pickle.dump(data, f)
+
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=4)
         print(f"Agent's parameters saved to {filepath}")
 
     def load(self, filepath):
         """
-        Load the agent's parameters (V and policy) from a file.
+        Load the agent's parameters (value table and policy) from a JSON file.
         
         :param filepath: The path to the file.
         """
-        with open(filepath, 'rb') as f:
-            data = pickle.load(f)
-        self.value_table = data['V']
-        self.policy = data['policy']
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+        self.value_table = np.array(data['value_table'])
+        self.policy.policy_table = np.array([data['policy'][str(state)] for state in range(len(data['policy']))])
         print(f"Agent's parameters loaded from {filepath}")
