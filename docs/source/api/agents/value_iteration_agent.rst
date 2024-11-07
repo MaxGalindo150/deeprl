@@ -1,12 +1,8 @@
+######################
 ValueIterationAgent
-====================
+######################
 
 The `ValueIterationAgent` class implements the value iteration algorithm, a dynamic programming approach used to find the optimal policy for Markov Decision Processes (MDPs) with finite state and action spaces.
-
-.. autoclass:: deeprl.agents.value_iteration_agent.ValueIterationAgent
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 **Algorithm Overview**:
 
@@ -40,9 +36,50 @@ Value iteration is an iterative algorithm that focuses on directly optimizing th
 
 The algorithm iteratively updates the value function for each state until the values converge, meaning additional iterations do not significantly change :math:`V(s)`.
 
-**Example Usage**:
 
-Here's how to use `ValueIterationAgent`:
+
+***********************
+Notes
+***********************
+
+**References**:
+
+1. Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction (2nd ed.)*. MIT Press. Available at: http://incompleteideas.net/book/the-book-2nd.html
+
+2. Bellman, R. E. (1957). *Dynamic Programming*. Princeton University Press.
+
+3. Puterman, M. L. (1994). *Markov Decision Processes: Discrete Stochastic Dynamic Programming*. Wiley.
+
+4. Bertsekas, D. P. (2007). *Dynamic Programming and Optimal Control (Vol. 1, 3rd ed.)*. Athena Scientific.
+
+
+***********************
+Can I use?
+***********************
+
+.. list-table::
+   :header-rows: 1
+
+   * - Space
+     - Action
+     - Observation
+   * - Discrete
+     - ✅
+     - ✅
+   * - Box
+     - ❌
+     - ❌
+   * - MultiDiscrete
+     - ✅
+     - ✅
+   * - MultiBinary
+     - ✅
+     - ✅
+
+
+***********************
+Example
+***********************
 
 .. code-block:: python
 
@@ -62,30 +99,17 @@ Here's how to use `ValueIterationAgent`:
        main()
 
 
-**Method Summary**:
 
-- `learn(self)`: Executes the value iteration algorithm to find the optimal value function and derive the corresponding optimal policy.
+.. autoclass:: deeprl.agents.value_iteration_agent.ValueIterationAgent
+   :members:
+   :inherited-members:
 
-**Details**:
+***********************
+Parameters
+***********************
 
-- **Value Function Update**: In each iteration, the algorithm updates the value of each state by taking the maximum expected reward over all actions, iterating until the value function converges.
+***********************
+See Also 
+***********************
 
-- **Policy Derivation**: After the value function has converged, the optimal policy is derived by selecting actions that maximize the expected return for each state.
-
-- **Policy**: This agent produces a deterministic policy by default, meaning it selects actions based on the maximized value of each state. Users can implement custom policies by modifying the policy derivation process.
-
-**Convergence**:
-
-- Value iteration is guaranteed to converge to the optimal policy when applied to MDPs with discrete and finite state and action spaces.
-
-- This method can be computationally intensive for large state spaces, as each iteration updates the value of every state in the environment.
-
-**Use Cases and Limitations**:
-
-- **Use Cases**: Value iteration is effective for small to medium-sized MDPs with discrete states and actions, where the computational cost is manageable.
-
-- **Limitations**: For environments with very large state spaces, value iteration may be less practical due to its computational requirements. In such cases, approximate methods or other RL algorithms may be preferable.
-
-**See Also**: 
-
-- `deeprl.agents.PolicyIterationAgent` for a related algorithm that alternates explicitly between policy evaluation and policy improvement.
+- :class:`deeprl.agents.policy_iteration_agent.PolicyIterationAgent` for a related algorithm that alternates explicitly between policy evaluation and policy improvement.
