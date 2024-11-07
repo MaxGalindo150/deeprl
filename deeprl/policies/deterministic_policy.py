@@ -23,10 +23,11 @@ class DeterministicPolicy(BasePolicy):
         """
         try:
             return self.policy_table[state].item()
-        except KeyError:
-            raise KeyError(f"State {state} not found in policy_table.")
         except IndexError:
             raise IndexError(f"State {state} is out of range for the policy table.")
+        except KeyError:
+            raise KeyError(f"State {state} not found in policy_table.")
+        
     
     def update_policy(self, state, value):
         """
@@ -35,4 +36,7 @@ class DeterministicPolicy(BasePolicy):
         :param state: The state.
         :param value: The value.
         """
-        self.policy_table[state] = value
+        try:
+            self.policy_table[state] = value
+        except IndexError:
+            raise IndexError(f"State {state} is out of range for the policy table.")
