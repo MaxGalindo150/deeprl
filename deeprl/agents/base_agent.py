@@ -4,7 +4,10 @@ class Agent(ABC):
     """
     Base class for all reinforcement learning agents.
 
-    This class defines the basic interface that all reinforcement learning agents must implement. It includes methods for selecting actions, learning from experience, saving and loading parameters, and updating the policy.
+    This class defines the basic interface that all reinforcement learning 
+    agents must implement. It includes methods for selecting actions, 
+    learning from experience, saving and loading parameters, and updating 
+    the policy.
     """
     
     @abstractmethod
@@ -12,7 +15,8 @@ class Agent(ABC):
         """
         Select an action based on the current state of the environment.
 
-        This method should be implemented by all subclasses to define how the agent selects actions.
+        This method should be implemented by all subclasses to define how 
+        the agent selects actions.
 
         :param state: The current state of the environment.
         :type state: object
@@ -26,7 +30,8 @@ class Agent(ABC):
         """
         Update the agent's parameters based on the collected experience.
 
-        This method should be implemented by all subclasses to define how the agent learns from experience.
+        This method should be implemented by all subclasses to define how 
+        the agent learns from experience.
         
         :return: None
         """
@@ -37,9 +42,11 @@ class Agent(ABC):
         """
         Save the agent's parameters to a file.
 
-        This method can be overridden by subclasses to define how the agent's parameters are saved.
+        This method can be overridden by subclasses to define how the 
+        agent's parameters are saved.
 
-        :param filepath: The path to the file where the parameters will be saved.
+        :param filepath: The path to the file where the parameters will 
+                         be saved.
         :type filepath: str
         :return: None
         """
@@ -50,9 +57,11 @@ class Agent(ABC):
         """
         Load the agent's parameters from a file.
 
-        This method can be overridden by subclasses to define how the agent's parameters are loaded.
+        This method can be overridden by subclasses to define how the 
+        agent's parameters are loaded.
 
-        :param filepath: The path to the file from which the parameters will be loaded.
+        :param filepath: The path to the file from which the parameters 
+                         will be loaded.
         :type filepath: str
         :return: None
         """
@@ -63,7 +72,8 @@ class Agent(ABC):
         """
         Update the policy based on the agent's parameters.
 
-        This method can be overridden by subclasses to define how the agent's policy is updated.
+        This method can be overridden by subclasses to define how the 
+        agent's policy is updated.
         
         :return: None
         """

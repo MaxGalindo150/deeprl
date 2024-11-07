@@ -12,36 +12,20 @@ class PolicyIterationAgent(Agent):
     def __init__(self, env, gamma=0.99, theta=1e-6, policy=None):
         """
         Initialize the PolicyIterationAgent.
-        This method initializes the PolicyIterationAgent with the given environment, discount factor, and convergence threshold. The agent will use these parameters to perform policy iteration to find the optimal policy.
-        :param env: The environment in which the agent will operate. This should be an instance of a Gymnasium environment or a compatible environment wrapper.
-        :type env: gymnasium.Env or GymnasiumEnvWrapper
-        :param gamma: The discount factor for future rewards. This value should be between 0 and 1, where 0 means only immediate rewards are considered, and 1 means future rewards are fully considered.
-        :type gamma: float, optional
-        :param theta: The convergence threshold for policy evaluation. The iteration stops when the value function change is less than this threshold.
-        :type theta: float, optional
         """
         self.env = env
         self.gamma = gamma
         self.theta = theta
         self.policy = policy if policy else DeterministicPolicy(observation_space=env.observation_space)
         self.value_table = torch.zeros(env.observation_space.n)
+    
     def policy_evaluation(self):
         """
         Evaluate the current policy using the value iteration algorithm.
 
-        This method iteratively updates the value function for each state under the current policy until the value function converges. The convergence is determined by the threshold `theta`.
-
-        The value function is updated using the Bellman equation for the given policy:
-        
-            V(s) = sum(P(s'|s,a) * [R(s,a,s') + gamma * V(s')])
-
-        where:
-        - V(s) is the value of state s.
-        - P(s'|s,a) is the probability of transitioning to state s' from state s given action a.
-        - R(s,a,s') is the reward received after transitioning from state s to state s' given action a.
-        - gamma is the discount factor for future rewards.
-
-        :return: None
+        This method iteratively updates the value function for each state under
+        the current policy until the value function converges. The convergence is 
+        determined by the threshold `theta`.
         """
         underlying_env = self.env.get_underlying_env()
         while True:
@@ -49,17 +33,17 @@ class PolicyIterationAgent(Agent):
             for state in range(underlying_env.observation_space.n):
                 v = self.value_table[state]
                 action = self.policy.select_action(state)
-                self.value_table[state] = sum([
+                self.value_table[state] = sum(
                     prob * (reward + self.gamma * self.value_table[next_state])
                     for prob, next_state, reward, done in underlying_env.P[state][action]
-                ])
+                )
                 delta = max(delta, abs(v - self.value_table[state]))
             if delta < self.theta:
                 break
 
     def update_policy(self):
         """
-        Improve the current policy using the value table. Also known as policy improvement.
+        Improve the current policy using the value table.
         """
         policy_stable = True
         for state in range(self.env.observation_space.n):
@@ -77,11 +61,11 @@ class PolicyIterationAgent(Agent):
         :param state: The state.
         :return: List of Q-values.
         """
-        underlying_env = self.env.get_underlying_env()  # Get the underlying environment
+        underlying_env = self.env.get_underlying_env()
         q_values = torch.zeros(underlying_env.action_space.n)
 
         for action in range(underlying_env.action_space.n):
-            if hasattr(underlying_env, 'P'):  # Check if the environment has a transition matrix
+            if hasattr(underlying_env, 'P'):
                 for prob, next_state, reward, done in underlying_env.P[state][action]:
                     q_values[action] += prob * (reward + self.gamma * self.value_table[next_state])
             else:
@@ -112,7 +96,8 @@ class PolicyIterationAgent(Agent):
 
     def interact(self, num_episodes=1, render=False):
         """
-        Interact with the environment following the learned policy for a given number of episodes.
+        Interact with the environment following the learned policy for a given
+        number of episodes.
         
         :param num_episodes: Number of episodes to run.
         :param render: If True, render the environment during interaction.
@@ -148,7 +133,7 @@ class PolicyIterationAgent(Agent):
         :param filepath: The path to the file.
         """
         data = {
-            'V': self.V,
+            'V': self.value_table,
             'policy': self.policy
         }
         with open(filepath, 'wb') as f:
@@ -163,6 +148,6 @@ class PolicyIterationAgent(Agent):
         """
         with open(filepath, 'rb') as f:
             data = pickle.load(f)
-        self.V = data['V']
+        self.value_table = data['V']
         self.policy = data['policy']
         print(f"Agent's parameters loaded from {filepath}")
