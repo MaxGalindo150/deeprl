@@ -1,4 +1,4 @@
-import torch
+import numpy as np
 import pickle
 
 from deeprl.agents.base_agent import Agent
@@ -17,7 +17,7 @@ class PolicyIterationAgent(Agent):
         self.gamma = gamma
         self.theta = theta
         self.policy = policy if policy else DeterministicPolicy(observation_space=env.observation_space)
-        self.value_table = torch.zeros(env.observation_space.n)
+        self.value_table = np.zeros(env.observation_space.n)
     
     def policy_evaluation(self):
         """
@@ -49,7 +49,7 @@ class PolicyIterationAgent(Agent):
         for state in range(self.env.observation_space.n):
             old_action = self.policy.select_action(state)
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, torch.argmax(q_values).item())
+            self.policy.update_policy(state, np.argmax(q_values).item())
             if old_action != self.policy.select_action(state):
                 policy_stable = False
         return policy_stable
@@ -62,7 +62,7 @@ class PolicyIterationAgent(Agent):
         :return: List of Q-values.
         """
         underlying_env = self.env.get_underlying_env()
-        q_values = torch.zeros(underlying_env.action_space.n)
+        q_values = np.zeros(underlying_env.action_space.n)
 
         for action in range(underlying_env.action_space.n):
             if hasattr(underlying_env, 'P'):

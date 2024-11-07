@@ -1,4 +1,4 @@
-import numpy as torch
+import numpy as np
 import pickle
 
 from deeprl.agents import Agent
@@ -20,7 +20,7 @@ class ValueIterationAgent(Agent):
         self.env = env
         self.gamma = gamma
         self.theta = theta
-        self.V = torch.zeros(env.observation_space.n)
+        self.V = np.zeros(env.observation_space.n)
         self.policy = policy if policy else DeterministicPolicy(env.observation_space)
         
     def value_iteration(self):
@@ -47,7 +47,7 @@ class ValueIterationAgent(Agent):
         :return: List of Q-values.
         """
         underlying_env = self.env.get_underlying_env()  # Get the underlying environment
-        q_values = torch.zeros(underlying_env.action_space.n)
+        q_values = np.zeros(underlying_env.action_space.n)
 
         for action in range(underlying_env.action_space.n):
             if hasattr(underlying_env, 'P'):  # Check if the environment has a transition matrix
@@ -64,7 +64,7 @@ class ValueIterationAgent(Agent):
         """
         for state in range(self.env.observation_space.n):
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, torch.argmax(q_values).item())
+            self.policy.update_policy(state, np.argmax(q_values).item())
     
     def act(self, state):
         """

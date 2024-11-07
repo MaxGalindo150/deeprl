@@ -3,7 +3,7 @@ from deeprl.environments import GymnasiumEnvWrapper
 
 def main():
     # Configure the FrozenLake environment with a slippery surface using GymnasiumEnvWrapper from DeepRL
-    env = GymnasiumEnvWrapper('FrozenLake-v1',is_slippery=False, render_mode='human')
+    env = GymnasiumEnvWrapper('FrozenLake-v1',is_slippery=True, render_mode='human')
     agent = PolicyIterationAgent(env)
     agent.learn()
 
