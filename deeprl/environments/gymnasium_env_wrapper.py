@@ -3,16 +3,17 @@ import gymnasium as gym
 class GymnasiumEnvWrapper:
     """
     Wrapper for Gymnasium environments that allows easy integration with DeepRL.
+    
+    :param env: Name of the environment in Gymnasium or an instance of a Gymnasium environment.
+    :type env: str or gymnasium.Env
+    :param kwargs: Additional arguments to create the environment if `env` is a string.
     """
 
-    def __init__(self, env_name, **kwargs):
+    def __init__(self, env, **kwargs):
         """
         Initializes the wrapper with the Gymnasium environment.
-        
-        :param env_name: Name of the environment in Gymnasium.
-        :param kwargs: Additional arguments to create the environment.
         """
-        self.env = gym.make(env_name, **kwargs)
+        self.env = env if isinstance(env, gym.Env) else gym.make(env, **kwargs)
         self.observation_space = self.env.observation_space
         self.action_space = self.env.action_space
 
