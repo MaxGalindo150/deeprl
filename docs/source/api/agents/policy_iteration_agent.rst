@@ -1,11 +1,10 @@
+
+####################################
 PolicyIterationAgent
-=====================
+####################################
+
 The `PolicyIterationAgent` class implements the policy iteration algorithm, a dynamic programming method used for solving Markov Decision Processes (MDPs) with finite state and action spaces.
 
-.. autoclass:: deeprl.agents.policy_iteration_agent.PolicyIterationAgent
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 **Algorithm Overview**:
 
@@ -39,8 +38,54 @@ Policy iteration is an iterative algorithm that alternates between **policy eval
 
 The algorithm repeats these steps until the policy converges to the optimal policy, meaning further iterations do not change the policy.
 
-**Example Usage**:
-Here's how to use `PolicyIterationAgent`:
+************************************
+Notes
+************************************
+
+**References**:
+
+1. Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction (2nd ed.)*. MIT Press. Available at: http://incompleteideas.net/book/the-book-2nd.html
+
+2. Bellman, R. E. (1957). *Dynamic Programming*. Princeton University Press.
+
+3. Puterman, M. L. (1994). *Markov Decision Processes: Discrete Stochastic Dynamic Programming*. Wiley.
+
+4. Bertsekas, D. P. (2007). *Dynamic Programming and Optimal Control (Vol. 1, 3rd ed.)*. Athena Scientific.
+
+5. Howard, R. A. (1960). *Dynamic Programming and Markov Processes*. MIT Press.
+
+
+.. note::
+   By default, the agent uses a deterministic policy, meaning it selects the action with the highest probability. You can change this by setting the `policy` attribute to a custom policy function. Also note that the agent uses a discount factor (:math:`\gamma = 0.99`) by default, you can change this by setting the :math:`\gamma` attribute.
+
+************************************
+Can I use?
+************************************
+
+- Gym environments:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Space
+     - Action
+     - Observation
+   * - Discrete
+     - ✅
+     - ✅
+   * - Box
+     - ❌
+     - ❌
+   * - MultiDiscrete
+     - ✅
+     - ✅
+   * - MultiBinary
+     - ✅
+     - ✅
+
+************************************
+Example
+************************************
 
 .. code-block:: python
 
@@ -48,32 +93,26 @@ Here's how to use `PolicyIterationAgent`:
    from deeprl.environments import GymnasiumEnvWrapper
 
    def main():
-      # Configure the FrozenLake environment with a slippery surface using GymnasiumEnvWrapper from DeepRL
+
       env = GymnasiumEnvWrapper('FrozenLake-v1',is_slippery=False, render_mode='human')
       agent = PolicyIterationAgent(env)
       agent.learn()
 
-      # Unpack the initial state and reset the environment
       agent.interact(num_episodes=1, render=True)
 
    if __name__ == '__main__':
       main()
 
-**Method Summary**:
 
-- `learn(self)`: Runs the policy iteration algorithm to determine the optimal policy. This method alternates between policy evaluation and policy improvement until convergence.
+************************************
+Parameters
+************************************
 
-**Details**:
+.. autoclass:: deeprl.agents.policy_iteration_agent.PolicyIterationAgent
+   :members:
+   
+************************************
+See Also
+************************************
 
-- **Policy Evaluation**: This step iteratively calculates the state values for the current policy until the value function converges.
-
-- **Policy Improvement**: Once the values have converged, the policy is updated to select the action that maximizes the expected return based on the current value function.
-
-- **Policy**: By default, the agent uses a determinist policy, meaning it selects the action with the highest probability, the policy is improved by selecting the action that maximizes the expected return. You can change this by setting the `policy` attribute to a custom policy function.   
-
-**Convergence**:
-
-- Policy iteration is guaranteed to converge to the optimal policy when applied to MDPs with discrete and finite state and action spaces.
-
-**See Also**: 
-- `deeprl.agents.ValueIterationAgent` for an alternative dynamic programming method that uses value iteration to find the optimal policy.
+- :class:`deeprl.agents.value_iteration_agent.ValueIterationAgent` for an alternative dynamic programming method that uses value iteration to find the optimal policy.

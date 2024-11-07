@@ -8,15 +8,17 @@ from deeprl.policies import DeterministicPolicy
 class ValueIterationAgent(Agent):
     """
     Agent that uses Value Iteration to learn the optimal policy.
+    
+    
+    :param env: The environment.
+    :param gamma: The discount factor.
+    :param theta: The convergence threshold.
+    :param policy: The policy to use (default is a deterministic policy).
     """
     
     def __init__(self, env, gamma=0.99, theta=1e-5, policy=None):
         """
         Initialize the agent.
-        d
-        :param env: The environment.
-        :param gamma: The discount factor.
-        :param theta: The convergence threshold.
         """
         self.env = env
         self.gamma = gamma

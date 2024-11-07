@@ -8,12 +8,15 @@ from deeprl.policies import DeterministicPolicy
 class PolicyIterationAgent(Agent):
     """
     Agent that implements the Policy Iteration algorithm.
+    
+    :param env: The environment.
+    :param gamma: The discount factor.
+    :param theta: The convergence threshold.
+    :param policy: The policy to use (default is a deterministic policy).
     """
 
     def __init__(self, env, gamma=0.99, theta=1e-6, policy=None):
-        """
-        Initialize the PolicyIterationAgent.
-        """
+        
         self.env = env
         self.gamma = gamma
         self.theta = theta
@@ -21,9 +24,7 @@ class PolicyIterationAgent(Agent):
         self.value_table = np.zeros(env.observation_space.n)
 
     def policy_evaluation(self):
-        """
-        Evaluate the current policy using the value iteration algorithm.
-        """
+    
         underlying_env = self.env.get_underlying_env()
         while True:
             delta = 0
@@ -39,9 +40,7 @@ class PolicyIterationAgent(Agent):
                 break
 
     def update_policy(self):
-        """
-        Improve the current policy using the value table.
-        """
+        
         policy_stable = True
         for state in range(self.env.observation_space.n):
             old_action = self.policy.select_action(state)
@@ -52,12 +51,7 @@ class PolicyIterationAgent(Agent):
         return policy_stable
 
     def compute_q_values(self, state):
-        """
-        Compute the Q-values for all actions in a given state.
         
-        :param state: The state.
-        :return: List of Q-values.
-        """
         underlying_env = self.env.get_underlying_env()
         q_values = np.zeros(underlying_env.action_space.n)
 
@@ -71,36 +65,26 @@ class PolicyIterationAgent(Agent):
         return q_values
 
     def policy_iteration(self):
-        """
-        Execute the Policy Iteration algorithm.
-        """
+        
         while True:
             self.policy_evaluation()
             if self.update_policy():
                 break
 
     def act(self, state):
-        """
-        Select an action based on the state and the current policy.
         
-        :param state: The current state of the environment.
-        :return: The selected action.
-        """
         return self.policy.select_action(state)
 
     def learn(self):
-        """
-        Execute the learning process (policy iteration).
-        """
+        
         self.policy_iteration()
 
     def interact(self, num_episodes=1, render=False):
         """
         Interact with the environment following the learned policy for a given number of episodes.
         
-        :param num_episodes: Number of episodes to run.
-        :param render: If True, render the environment during interaction.
-        :return: List of total rewards obtained in each episode.
+        :param num_episodes: The number of episodes to run.
+        :param render: Whether to render the environment.
         """
         episode_rewards = []
         
@@ -119,9 +103,11 @@ class PolicyIterationAgent(Agent):
                 state = next_state
             
             episode_rewards.append(total_reward)
-            self.env.close()
             if render:
                 print(f"Episode {episode + 1}: Total Reward = {total_reward}")
+        
+        if render:
+            self.env.close()
         
         return episode_rewards
 

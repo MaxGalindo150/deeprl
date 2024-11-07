@@ -4,10 +4,17 @@ class Agent(ABC):
     """
     Base class for all reinforcement learning agents.
 
-    This class defines the basic interface that all reinforcement learning 
-    agents must implement. It includes methods for selecting actions, 
-    learning from experience, saving and loading parameters, and updating 
-    the policy.
+    This abstract class defines the core interface that all reinforcement 
+    learning agents must implement, serving as a blueprint. It includes 
+    essential methods for:
+    - Selecting actions
+    - Learning from experience
+    - Saving and loading model parameters
+    - Updating the policy
+    - Interacting with the environment
+    
+    All subclasses must implement these methods to ensure consistent 
+    functionality across different types of agents.
     """
     
     @abstractmethod
@@ -15,12 +22,12 @@ class Agent(ABC):
         """
         Select an action based on the current state of the environment.
 
-        This method should be implemented by all subclasses to define how 
-        the agent selects actions.
-
+        **Abstract Method:** Must be implemented by subclasses to define 
+        the agent's action-selection mechanism.
+        
         :param state: The current state of the environment.
         :type state: object
-        :return: The selected action.
+        :return: The action chosen by the agent.
         :rtype: object
         """
         pass
@@ -28,10 +35,10 @@ class Agent(ABC):
     @abstractmethod
     def learn(self):
         """
-        Update the agent's parameters based on the collected experience.
+        Update the agent's parameters based on experience.
 
-        This method should be implemented by all subclasses to define how 
-        the agent learns from experience.
+        **Abstract Method:** Subclasses implement this method to define 
+        the learning process, updating the agent’s parameters.
         
         :return: None
         """
@@ -40,13 +47,12 @@ class Agent(ABC):
     @abstractmethod
     def save(self, filepath):
         """
-        Save the agent's parameters to a file.
+        Save the agent's parameters to a specified file.
 
-        This method can be overridden by subclasses to define how the 
-        agent's parameters are saved.
+        **Abstract Method:** Can be customized in subclasses to specify 
+        the format and details of parameter saving.
 
-        :param filepath: The path to the file where the parameters will 
-                         be saved.
+        :param filepath: Path where parameters will be saved.
         :type filepath: str
         :return: None
         """
@@ -55,13 +61,12 @@ class Agent(ABC):
     @abstractmethod
     def load(self, filepath):
         """
-        Load the agent's parameters from a file.
+        Load the agent's parameters from a specified file.
 
-        This method can be overridden by subclasses to define how the 
-        agent's parameters are loaded.
+        **Abstract Method:** Can be customized in subclasses to specify 
+        the format and details of parameter loading.
 
-        :param filepath: The path to the file from which the parameters 
-                         will be loaded.
+        :param filepath: Path from which parameters will be loaded.
         :type filepath: str
         :return: None
         """
@@ -70,10 +75,10 @@ class Agent(ABC):
     @abstractmethod
     def update_policy(self):
         """
-        Update the policy based on the agent's parameters.
+        Update the agent's policy based on current parameters.
 
-        This method can be overridden by subclasses to define how the 
-        agent's policy is updated.
+        **Abstract Method:** Typically called after learning to adjust 
+        the policy according to updated parameters.
         
         :return: None
         """
@@ -82,13 +87,17 @@ class Agent(ABC):
     @abstractmethod
     def interact(self, env, episodes=1):
         """
-        Interactúa con el entorno durante un número específico de episodios.
+        Interact with the environment over a specified number of episodes.
 
-        :param env: El entorno con el que interactuar.
+        **Abstract Method:** Defines how the agent interacts with the 
+        environment, typically used to gather experience or evaluate 
+        performance.
+
+        :param env: The environment to interact with.
         :type env: gymnasium.Env
-        :param episodes: Número de episodios para la interacción.
+        :param episodes: Number of episodes for interaction.
         :type episodes: int
-        :return: Lista de recompensas acumuladas por episodio.
+        :return: A list of accumulated rewards per episode.
         :rtype: list
         """
         pass

@@ -4,7 +4,7 @@ The `agents` module contains classes for reinforcement learning agents, includin
 
 .. toctree::
    :maxdepth: 1
-   :caption: Agents Classes:
+   :caption: Agents:
 
    agent
    value_iteration_agent
