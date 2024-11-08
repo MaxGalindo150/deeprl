@@ -1,107 +1,123 @@
-from deeprl.agents import Agent
-from deeprl.policies import EpsilonGreedyPolicy
-import numpy as np
+import torch
 import json
+from deeprl.agents.base_agent import Agent
+from deeprl.policies.epsilon_greedy_policy import EpsilonGreedyPolicy
+from deeprl.environments import GymnasiumEnvWrapper
+from deeprl.visualization import ProgressBoard
+from deeprl.utils import print_progress
 
 class QLearningAgent(Agent):
     """
-    Q-learning agent that uses an epsilon-greedy policy.
+    Q-learning agent using an epsilon-greedy policy with PyTorch tensors.
+    
+    :param env: The environment to interact with.
+    :param learning_rate: The learning rate for updating the Q-table.
+    :param discount_factor: The discount factor for future rewards.
+    :param epsilon: The probability of selecting a random action during training.
+    :param step_penalty: The penalty for each step taken in the environment.
+    :param verbose: Whether to display training progress.
+    
     """
 
-    def __init__(self, env, learning_rate=0.1, discount_factor=0.99, epsilon=0.1, policy=None):
-        """
-        Initialize the Q-learning agent.
-
-        :param env: The environment.
-        :param learning_rate: The learning rate (alpha).
-        :param discount_factor: The discount factor (gamma).
-        :param epsilon: Initial exploration rate for epsilon-greedy policy.
-        """
+    def __init__(self, env, learning_rate=0.1, discount_factor=0.99, epsilon=0.1, step_penalty=0.0, verbose=False):
         self.env = env
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
-
-        # Initialize Q-table with zeros
-        self.q_table = np.zeros((env.observation_space.n, env.action_space.n))
-
-        # Use EpsilonGreedyPolicy for action selection
-        self.policy = policy if policy else EpsilonGreedyPolicy(epsilon)
+        self.step_penalty = step_penalty
+        self.verbose = verbose
+        self.q_table = torch.zeros((env.observation_space.n, env.action_space.n), dtype=torch.float32)
+        self.policy = EpsilonGreedyPolicy(epsilon=epsilon)
     
     def act(self, state):
-        """
-        Select an action based on the epsilon-greedy policy.
-
-        :param state: The current state of the environment.
-        :return: The selected action.
-        """
-        q_values = self.q_table[state]
-        return self.policy.select_action(q_values)
+        return self.policy.select_action(self.q_table[state])
     
-    def learn(self, state, action, reward, next_state, done):
-        """
-        Update the Q-table based on the agent's experience.
+    def learn(self, episodes=1000, max_steps=100, save_train_graph=False):
+        """Train the agent by updating the Q-table."""
+        episode_rewards = []
+        progress_board = ProgressBoard(xlabel="Episode", ylabel="Cumulative Reward", save_path="q_learning_training.png")
 
-        :param state: The current state.
-        :param action: The action taken.
-        :param reward: The reward received after taking the action.
-        :param next_state: The state reached after taking the action.
-        :param done: Whether the episode is done.
-        """
-        best_next_action = np.argmax(self.q_table[next_state])
+        # Display header for progress if verbose is enabled
+        if self.verbose:
+            print_progress(episode=0, total_reward=0, avg_reward=0, steps=0, header=True)
+
+        for episode in range(episodes):
+            state = self.env.reset()
+            total_reward, steps = 0, 0
+
+            for _ in range(max_steps):
+                action = self.act(state)
+                next_state, reward, done, truncated, info = self.env.step(action)
+                
+                reward = self.step_penalty if reward == 0 and self.step_penalty != 0 else reward
+                self.update_q_table(state, action, reward, next_state, done)
+                
+                total_reward += reward
+                state = next_state
+                steps += 1
+                if done:
+                    break
+
+            episode_rewards.append(total_reward)
+            
+            if save_train_graph:
+                progress_board.record(total_reward)
+
+            # Print progress every 10 episodes if verbose is enabled
+            avg_reward = sum(episode_rewards) / (episode + 1)
+            if episode % 10 == 0 and self.verbose:
+                print_progress(episode + 1, total_reward, avg_reward, steps)
+        if save_train_graph:
+            progress_board.save()
+        return episode_rewards
+
+    def update_q_table(self, state, action, reward, next_state, done):
+        """Update Q-table based on the agent's experience."""
+        best_next_action = torch.argmax(self.q_table[next_state]).item()
         target = reward + self.discount_factor * self.q_table[next_state][best_next_action] * (1 - done)
         self.q_table[state][action] += self.learning_rate * (target - self.q_table[state][action])
     
-    def save(self, filepath):
-        """
-        Save the Q-table to a file in JSON format.
+    def interact(self, episodes=1, max_steps=100, render=False, save_test_graph=False):
+        """Evaluate the agent in the environment without updating Q-table."""
+        episode_rewards = []
+        progress_board = ProgressBoard(xlabel="Episode", ylabel="Cumulative Reward", save_path="q_learning_test.png")
+        env = GymnasiumEnvWrapper('FrozenLake-v1', is_slippery=False, render_mode='human') if render else self.env
 
-        :param filepath: The path to the file.
-        """
+        for episode in range(episodes):
+            state = env.reset()
+            total_reward = 0
+
+            for _ in range(max_steps):
+                if render:
+                    env.render()
+                action = torch.argmax(self.q_table[state]).item()
+                next_state, reward, done, truncated, info = env.step(action)
+                
+                total_reward += reward
+                state = next_state
+                if done:
+                    break
+
+            episode_rewards.append(total_reward)
+            if save_test_graph:
+                progress_board.record(total_reward)
+                
+        if save_test_graph:
+            progress_board.save()
+
+        if render:
+            env.close()
+
+        return episode_rewards
+
+    def save(self, filepath):
+        """Save the Q-table to a file."""
         with open(filepath, 'w') as f:
             json.dump(self.q_table.tolist(), f)
         print(f"Q-table saved to {filepath}")
 
     def load(self, filepath):
-        """
-        Load the Q-table from a file.
-
-        :param filepath: The path to the file.
-        """
+        """Load the Q-table from a file."""
         with open(filepath, 'r') as f:
-            self.q_table = np.array(json.load(f))
+            q_table_list = json.load(f)
+            self.q_table = torch.tensor(q_table_list, dtype=torch.float32)
         print(f"Q-table loaded from {filepath}")
-    
-    def interact(self, env, episodes=1, max_steps=100):
-        """
-        Interact with the environment for a specific number of episodes.
-
-        :param env: The environment to interact with.
-        :param episodes: Number of episodes to run.
-        :param max_steps: Maximum steps per episode.
-        :return: List of cumulative rewards per episode.
-        """
-        episode_rewards = []
-
-        for episode in range(episodes):
-            state = env.reset()
-            done = False
-            total_reward = 0
-
-            for step in range(max_steps):
-                action = self.act(state)
-                next_state, reward, done, truncated, info = env.step(action)
-                
-                # Update Q-table with new experience
-                self.learn(state, action, reward, next_state, done)
-                
-                total_reward += reward
-                state = next_state
-                
-                if done:
-                    break
-            
-            episode_rewards.append(total_reward)
-            if episode % 10 == 0:
-                print(f"Episode {episode + 1}/{episodes}: Total Reward = {total_reward}")
-
-        return episode_rewards

@@ -112,4 +112,4 @@ Parameters
 See Also 
 ***********************
 
-- :class:`deeprl.agents.policy_iteration_agent.PolicyIterationAgent` for a related algorithm that alternates explicitly between policy evaluation and policy improvement.
+- :class:`~deeprl.agents.policy_iteration_agent.PolicyIterationAgent` for a related algorithm that alternates explicitly between policy evaluation and policy improvement.

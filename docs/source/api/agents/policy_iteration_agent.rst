@@ -115,4 +115,4 @@ Parameters
 See Also
 ************************************
 
-- :class:`deeprl.agents.value_iteration_agent.ValueIterationAgent` for an alternative dynamic programming method that uses value iteration to find the optimal policy.
+- :class:`~deeprl.agents.value_iteration_agent.ValueIterationAgent` for an alternative dynamic programming method that uses value iteration to find the optimal policy.
