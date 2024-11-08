@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 
-from .progress_board import ProgressBoard
 from .hyperparameters import HyperParameters
 
 

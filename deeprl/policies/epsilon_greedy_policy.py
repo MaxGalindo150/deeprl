@@ -1,30 +1,38 @@
 import torch
+import numpy as np
 from deeprl.policies.base_policy import BasePolicy
 
 class EpsilonGreedyPolicy(BasePolicy):
     """
-    Epsilon-Greedy policy.
+    Epsilon-greedy policy for exploration and exploitation.
     """
-    
+
     def __init__(self, epsilon=0.1):
-        """"
-        Initialize the policy with a given epsilon value.
-        
-        :param epsilon: The epsilon value.
+        """
+        Initialize the epsilon-greedy policy.
+
+        :param epsilon: Probability of choosing a random action.
         """
         self.epsilon = epsilon
-        
-    def select_action(self, state, q_values):
-        """"
-        Select an action using the epsilon-greedy policy.
-        
-        :param state: The state.
-        :param q_values: List or array of Q-values for each posible action.
+
+    def select_action(self, q_values):
         """
-        
+        Select an action based on epsilon-greedy policy.
+
+        :param q_values: Tensor of Q-values for the current state.
+        :return: Selected action as an integer.
+        """
         if torch.rand(1).item() < self.epsilon:
-            # Exploration: Select a random action
-            return torch.randint(len(q_values), (1,)).item()
+            # Explore: choose a random action
+            return np.random.choice(len(q_values))
         else:
-            # Exploitation: Select the action with the highest Q-value
+            # Exploit: choose the action with the highest Q-value
             return torch.argmax(q_values).item()
+
+    def set_epsilon(self, epsilon):
+        """
+        Update epsilon for the policy.
+
+        :param epsilon: New epsilon value.
+        """
+        self.epsilon = epsilon

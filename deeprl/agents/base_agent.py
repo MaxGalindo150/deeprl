@@ -72,7 +72,7 @@ class Agent(ABC):
         """
         pass
     
-    @abstractmethod
+    
     def update_policy(self):
         """
         Update the agent's policy based on current parameters.
