@@ -67,7 +67,7 @@ class ValueIterationAgent(Agent):
         """
         for state in range(self.env.observation_space.n):
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, np.argmax(q_values).item())
+            self.policy.update(state, np.argmax(q_values).item())
     
     def act(self, state):
         """

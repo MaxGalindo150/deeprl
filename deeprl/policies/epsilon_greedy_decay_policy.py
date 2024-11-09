@@ -2,23 +2,23 @@ import torch
 import numpy as np
 from deeprl.policies.base_policy import BasePolicy
 
-class EpsilonGreedyPolicy(BasePolicy):
+class EpsilonGreedyDecayPolicy(BasePolicy):
     """
     Epsilon-greedy policy for exploration and exploitation.
     
     :param epsilon: Probability of choosing a random action.
     :param decay: Whether to decay epsilon over time.
     :param decay_rate: Rate of epsilon decay.
+    :param min_epsilon: Minimum epsilon value.
     """
 
-    def __init__(self, epsilon=0.1, decay=False, decay_rate=0.99, min_epsilon=0.01):
+    def __init__(self, epsilon=0.1, decay_rate=0.99, min_epsilon=0.01):
         """
         Initialize the epsilon-greedy policy.
 
         :param epsilon: Probability of choosing a random action.
         """
         self.epsilon = epsilon
-        self.decay = decay
         self.decay_rate = decay_rate
         self.min_epsilon = min_epsilon
 
@@ -45,5 +45,8 @@ class EpsilonGreedyPolicy(BasePolicy):
         self.epsilon = epsilon
         
     def update(self):
+        """
+        If decay is enabled, decay epsilon over time.
+        """
         
-        pass
+        self.epsilon = max(self.min_epsilon, self.epsilon * self.decay_rate)

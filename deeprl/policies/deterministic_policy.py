@@ -29,7 +29,7 @@ class DeterministicPolicy(BasePolicy):
             raise KeyError(f"State {state} not found in policy_table.")
         
     
-    def update_policy(self, state, value):
+    def update(self, state, value):
         """
         Update the policy with the given state and value.
         

@@ -45,7 +45,7 @@ class PolicyIterationAgent(Agent):
         for state in range(self.env.observation_space.n):
             old_action = self.policy.select_action(state)
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, np.argmax(q_values).item())
+            self.policy.update(state, np.argmax(q_values).item())
             if old_action != self.policy.select_action(state):
                 policy_stable = False
         return policy_stable
