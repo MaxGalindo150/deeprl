@@ -2,6 +2,9 @@ SoftmaxPolicy
 =============
 The `SoftmaxPolicy` class implements a policy that selects actions based on the softmax distribution.
 
+.. warning::
+    The `SoftmaxPolicy` class is unestable and will be improved in future releases.
+
 .. autoclass:: deeprl.policies.SoftmaxPolicy
    :members:
    :undoc-members:

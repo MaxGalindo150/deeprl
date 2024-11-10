@@ -26,24 +26,35 @@ Here’s how to use the `MountainCarRewardShaping` class:
 
 .. code-block:: python
 
-    import gymnasium as gym
-    from deeprl.reward_shaping import MountainCarRewardShaping
+   from deeprl.environments import GymnasiumEnvWrapper
+   from deeprl.agents.q_learning_agent import QLearningAgent
+   from deeprl.function_approximations import RBFBasisApproximator
+   from deeprl.reward_shaping import MountainCarRewardShaping
 
-    # Initialize the MountainCar environment
-    env = gym.make('MountainCar-v0')
+   def main():
+      
+      # Initialize the environment and approximator
+      env = GymnasiumEnvWrapper('MountainCar-v0')
+      approximator = RBFBasisApproximator(env=env, gamma=0.5, n_components=500)
+         
+      agent = QLearningAgent(
+         env=env,
+         learning_rate=0.1,
+         discount_factor=0.99,
+         is_continuous=True,
+         approximator=approximator,
+         reward_shaping=MountainCarRewardShaping(),
+         verbose=True
+      )
+      
+      # Train the agent
+      agent.learn(episodes=10000, max_steps=10000, save_train_graph=True)
+      
+      # Evaluate the agent
+      rewards = agent.interact(episodes=10, render=True, save_test_graph=True)
 
-    # Initialize the reward shaping strategy
-    reward_shaping = MountainCarRewardShaping()
-
-    # Example interaction
-    state = (-0.5, 0.0)  # Position, velocity
-    next_state = (-0.4, 0.1)  # Position, velocity
-    action = 0  # Example action
-    reward = -1.0  # Original reward from the environment
-
-    # Compute the shaped reward
-    shaped_reward = reward_shaping.shape(state, action, next_state, reward)
-    print("Shaped Reward:", shaped_reward)
+   if __name__ == '__main__':
+      main()
 
 ***********************
 Parameters
@@ -60,6 +71,7 @@ See Also
 - :class:`~deeprl.reward_shaping.base_reward_shaping.BaseRewardShaping` for the abstract base class that `MountainCarRewardShaping` inherits from.
 - :class:`~deeprl.reward_shaping.step_penalty_shaping.StepPenaltyShaping` for a step penalty-based reward shaping strategy.
 - :class:`~deeprl.reward_shaping.distance_based_shaping.DistanceBasedShaping` for a reward shaping strategy based on proximity to a goal.
+- :class:`~deeprl.reward_shaping.potential_based_shaping.PotentialBasedShaping` for a potential-based reward shaping strategy.
 
 ***********************
 References

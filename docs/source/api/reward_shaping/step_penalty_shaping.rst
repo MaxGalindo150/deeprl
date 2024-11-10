@@ -65,8 +65,9 @@ See Also
 ***********************
 
 - :class:`~deeprl.reward_shaping.base_reward_shaping.BaseRewardShaping` for the abstract base class that `StepPenaltyShaping` inherits from.
-- :class:`~deeprl.reward_shaping.distance_based_shaping.DistanceBasedShaping` for a distance-based reward shaping strategy.
-- :class:`~deeprl.reward_shaping.potential_based_shaping.PotentialBasedShaping` for a shaping strategy based on potential functions.
+- :class:`~deeprl.reward_shaping.mountain_car_reward_shaping.MountainCarRewardShaping` for a reward shaping strategy tailored to the MountainCar environment.
+- :class:`~deeprl.reward_shaping.distance_based_shaping.DistanceBasedShaping` for a reward shaping strategy based on proximity to a goal.
+- :class:`~deeprl.reward_shaping.potential_based_shaping.PotentialBasedShaping` for a potential-based reward shaping strategy.
 
 ***********************
 References

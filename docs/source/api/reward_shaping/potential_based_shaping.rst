@@ -57,6 +57,7 @@ See Also
 ***********************
 
 - :class:`~deeprl.reward_shaping.base_reward_shaping.BaseRewardShaping` for the abstract base class that `MountainCarRewardShaping` inherits from.
+- :class:`~deeprl.reward_shaping.potential_based_shaping.PotentialBasedShaping` for a potential-based reward shaping strategy.
 - :class:`~deeprl.reward_shaping.step_penalty_shaping.StepPenaltyShaping` for a step penalty-based reward shaping strategy.
 - :class:`~deeprl.reward_shaping.distance_based_shaping.DistanceBasedShaping` for a reward shaping strategy based on proximity to a goal.
 
