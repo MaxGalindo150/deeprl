@@ -1,12 +1,13 @@
 from deeprl.environments import GymnasiumEnvWrapper
 from deeprl.agents.q_learning_agent import QLearningAgent
-from deeprl.function_approximations import PolynomialBasisApproximator
+from deeprl.function_approximations import RBFBasisApproximator
+from deeprl.reward_shaping import MountainCarRewardShaping
 
 def main():
     
     # Initialize the environment and approximator
-    env = GymnasiumEnvWrapper('CartPole-v1')
-    approximator = PolynomialBasisApproximator(env=env, degree=2)
+    env = GymnasiumEnvWrapper('MountainCar-v0')
+    approximator = RBFBasisApproximator(env=env, gamma=0.5, n_components=500)
         
     agent = QLearningAgent(
         env=env,
@@ -14,6 +15,7 @@ def main():
         discount_factor=0.99,
         is_continuous=True,
         approximator=approximator,
+        reward_shaping=MountainCarRewardShaping(),
         verbose=True
     )
     
