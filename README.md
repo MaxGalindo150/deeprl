@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprlearn)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-**deeprlearn** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments.
+**deeprlearn** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments. Check out the [documentation](http://deeprl.sytes.net/) for more details.
 
 ---
 
