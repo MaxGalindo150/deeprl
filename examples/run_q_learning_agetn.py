@@ -23,6 +23,9 @@ def main():
     
     # Evaluate the agent
     rewards = agent.interact(episodes=10, render=True, save_test_graph=True)
+    
+    agent.save('frozenlake_q_learning_agent')
+    agent.print_saved_config('frozenlake_q_learning_agent')
 
 if __name__ == '__main__':
     main()

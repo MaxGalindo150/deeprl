@@ -184,24 +184,45 @@ class QLearningAgent(Agent):
         return episode_rewards
 
     def save(self, filepath):
-        """Save Q-table or weights."""
-        if self.is_continuous:
-            data = {"weights": self.approximator.weights.tolist()}
-        else:
-            data = {"q_table": self.q_table.tolist()}
-        with open(filepath, "w") as f:
-            json.dump(data, f)
-        print(f"Q-table/weights saved to {filepath}")
+        """Save the complete agent state using PyTorch.
+        
+        :param filepath: The file path to save the agent's state.
+        
+        Saved fields:
+        
+        :param q_table: The Q-table to save (if not using function approximation).
+        :param weights: The weights to save (if using function approximation).
+        :param policy: The policy to save.
+        :param reward_shaping: The reward shaping instance to save.
+        :param learning_rate: The learning rate to save.
+        :param discount_factor: The discount factor to save
+        """
+        state = {
+            "is_continuous": self.is_continuous,
+            "q_table": self.q_table if not self.is_continuous else None,
+            "weights": self.approximator.weights if self.is_continuous else None,
+            "policy": self.policy,  # Save policy instance
+            "reward_shaping": self.reward_shaping,  # Save reward shaping instance
+            "learning_rate": self.learning_rate,
+            "discount_factor": self.discount_factor,
+        }
+        torch.save(state, filepath)
+        print(f"Agent's state saved to {filepath}")
 
     def load(self, filepath):
-        """Load Q-table or weights."""
-        with open(filepath, "r") as f:
-            data = json.load(f)
+        """Load the complete agent state using PyTorch."""
+        state = torch.load(filepath)
+        self.is_continuous = state["is_continuous"]
         if self.is_continuous:
-            self.approximator.weights = torch.tensor(data["weights"], dtype=torch.float32)
+            self.approximator.weights = state["weights"]
         else:
-            self.q_table = torch.tensor(data["q_table"], dtype=torch.float32)
-        print(f"Q-table/weights loaded from {filepath}")
+            self.q_table = state["q_table"]
+        self.policy = state["policy"]
+        self.reward_shaping = state["reward_shaping"]
+        self.learning_rate = state["learning_rate"]
+        self.discount_factor = state["discount_factor"]
+        print(f"Agent's state loaded from {filepath}")
+        
         
     def recreate_env_with_render(self):
         """
