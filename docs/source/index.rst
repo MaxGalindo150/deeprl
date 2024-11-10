@@ -26,6 +26,8 @@ For detailed information on the modules, classes, and functions available in Dee
    api/agents/index
    api/environments/index
    api/policies/index
+   api/function_approximations/index
+   api/reward_shaping/index
 
 Module Index
 ============

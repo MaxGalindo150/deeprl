@@ -25,6 +25,7 @@ extensions = [
     'sphinx.ext.viewcode',       # To add links to the source code
     'sphinx.ext.githubpages',    # To enable the GitHub Pages rendering
     'sphinx.ext.mathjax',        # To render math equations
+    'sphinx.ext.autosummary',    # To generate summaries
 ]
 
 

@@ -4,7 +4,7 @@ from deeprl.policies.base_policy import BasePolicy
 
 class EpsilonGreedyDecayPolicy(BasePolicy):
     """
-    Epsilon-greedy policy for exploration and exploitation.
+    Epsilon-greedy policy for exploration and explotation with epsilon decay.
     
     :param epsilon: Probability of choosing a random action.
     :param decay: Whether to decay epsilon over time.

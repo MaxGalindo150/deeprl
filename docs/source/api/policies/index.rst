@@ -10,3 +10,4 @@ The `policies` module includes various policy implementations used in reinforcem
    deterministic_policy
    epsilon_greedy_policy
    softmax_policy
+   epsilon_greedy_decay_policy

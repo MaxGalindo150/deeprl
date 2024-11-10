@@ -9,3 +9,4 @@ This section provides detailed information on the classes, functions, and method
    agents/index
    environments/index
    policies/index
+   function_approximations/index

@@ -113,3 +113,4 @@ See Also
 ***********************
 
 - :class:`~deeprl.agents.policy_iteration_agent.PolicyIterationAgent` for a related algorithm that alternates explicitly between policy evaluation and policy improvement.
+- :class:`~deeprl.agents.q_learning_agent.QLearningAgent` for a model-free reinforcement learning algorithm that learns the optimal policy through Q-value iteration.

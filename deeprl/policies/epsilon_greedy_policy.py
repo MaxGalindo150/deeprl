@@ -11,17 +11,14 @@ class EpsilonGreedyPolicy(BasePolicy):
     :param decay_rate: Rate of epsilon decay.
     """
 
-    def __init__(self, epsilon=0.1, decay=False, decay_rate=0.99, min_epsilon=0.01):
+    def __init__(self, epsilon=0.1):
         """
         Initialize the epsilon-greedy policy.
 
         :param epsilon: Probability of choosing a random action.
         """
         self.epsilon = epsilon
-        self.decay = decay
-        self.decay_rate = decay_rate
-        self.min_epsilon = min_epsilon
-
+    
     def select_action(self, q_values):
         """
         Select an action based on epsilon-greedy policy.
