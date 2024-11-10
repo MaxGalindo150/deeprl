@@ -1,10 +1,6 @@
-Aquí tienes una versión mejorada de tu `README.md`, incorporando lo que hemos desarrollado hasta ahora:
+# deeprlearn
 
----
-
-# deeprl
-
-[![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprl)
+[![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprlearn)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **deeprl** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments.
