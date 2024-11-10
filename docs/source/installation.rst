@@ -58,7 +58,7 @@ If you want to contribute to the development of deeprl or modify its source code
 
 **Common Issues and Troubleshooting:**
 --------------------------------------
-- **Issue**: *pip install deeprl* fails with a missing dependency.
+- **Issue**: *pip install deeprlearn* fails with a missing dependency.
   
   **Solution**: Ensure you have Python 3.7 or higher installed. Verify your Python version with:
 
