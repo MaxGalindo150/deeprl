@@ -1,6 +1,6 @@
-# Diseño de la Arquitectura de la Librería **DeepRL**
+# Diseño de la Arquitectura de la Librería **deeprl**
 
-Diseñar la arquitectura de una librería de aprendizaje por refuerzo profundo dirigida a investigadores avanzados requiere un enfoque centrado en la flexibilidad, extensibilidad y modularidad. Los investigadores avanzados suelen necesitar personalizar algoritmos, probar nuevas ideas y extender componentes existentes. A continuación, te detallo cómo podrías diseñar la arquitectura de tu librería **DeepRL** para satisfacer estas necesidades.
+Diseñar la arquitectura de una librería de aprendizaje por refuerzo profundo dirigida a investigadores avanzados requiere un enfoque centrado en la flexibilidad, extensibilidad y modularidad. Los investigadores avanzados suelen necesitar personalizar algoritmos, probar nuevas ideas y extender componentes existentes. A continuación, te detallo cómo podrías diseñar la arquitectura de tu librería **deeprl** para satisfacer estas necesidades.
 
 ## 1. Arquitectura Modular y Basada en Componentes
 

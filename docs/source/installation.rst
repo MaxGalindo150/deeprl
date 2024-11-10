@@ -1,17 +1,17 @@
 Installation Guide
 ==================
 
-To start using DeepRL, follow these simple installation instructions.
+To start using deeprl, follow these simple installation instructions.
 
 **Basic Installation:**
 -----------------------
-The easiest way to install DeepRL is through `pip`. Run the following command:
+The easiest way to install deeprl is through `pip`. Run the following command:
 
 .. code-block:: bash
 
-    pip install deeprl
+    pip install deeprlearn
 
-This will install the core dependencies required to use DeepRL.
+This will install the core dependencies required to use deeprl.
 
 **Optional Dependencies:**
 --------------------------
@@ -23,11 +23,11 @@ For certain features or enhanced functionality, you might want to install additi
 
       pip install gymnasium
 
-- **PyTorch**: DeepRL relies on PyTorch for underlying computations. If you haven't installed it already, follow the `official PyTorch installation guide <https://pytorch.org/get-started/locally/>`_ for the version that suits your environment.
+- **PyTorch**: deeprl relies on PyTorch for underlying computations. If you haven't installed it already, follow the `official PyTorch installation guide <https://pytorch.org/get-started/locally/>`_ for the version that suits your environment.
 
 **Development Installation:**
 -----------------------------
-If you want to contribute to the development of DeepRL or modify its source code, follow these steps:
+If you want to contribute to the development of deeprl or modify its source code, follow these steps:
 
 1. **Clone the repository**:
 
@@ -48,13 +48,13 @@ If you want to contribute to the development of DeepRL or modify its source code
        python3 -m venv venv
        source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
-.. 4. **Install the library in editable mode with development dependencies**:
+4. **Install the library in editable mode with development dependencies**:
 
-..    .. code-block:: bash
+   .. code-block:: bash
 
-..        pip install -e .[dev]
+       pip install -e .[dev]
 
-..    This will install DeepRL in editable mode, allowing you to make changes to the codebase and immediately reflect them without reinstalling. The `[dev]` option will include additional packages for development like linters, testing frameworks, etc.
+   This will install deeprl in editable mode, allowing you to make changes to the codebase and immediately reflect them without reinstalling. The `[dev]` option will include additional packages for development like linters, testing frameworks, etc.
 
 **Common Issues and Troubleshooting:**
 --------------------------------------
@@ -72,4 +72,4 @@ If you want to contribute to the development of DeepRL or modify its source code
 
 **Next Steps:**
 ---------------
-Once DeepRL is installed, head over to the **Tutorials** section to start using the library and build your first RL agent!
+Once deeprl is installed, head over to the **Tutorials** section to start using the library and build your first RL agent!

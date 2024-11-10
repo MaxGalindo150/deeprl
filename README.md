@@ -2,12 +2,12 @@ Aquí tienes una versión mejorada de tu `README.md`, incorporando lo que hemos 
 
 ---
 
-# DeepRL
+# deeprl
 
 [![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-**DeepRL** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments.
+**deeprl** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments.
 
 ---
 
@@ -30,10 +30,10 @@ Aquí tienes una versión mejorada de tu `README.md`, incorporando lo que hemos 
 
 ## Installation
 
-Install **DeepRL** directly from PyPI:
+Install **deeprl** directly from PyPI:
 
 ```bash
-pip install deeprl
+pip install deeprlearn
 ```
 
 ### Requirements
@@ -126,7 +126,7 @@ Contributions are welcome! To contribute, follow these steps:
 
 1. **Fork the repository**:
    ```bash
-   git clone https://github.com/MaxGalindo150/DeepRL.git
+   git clone https://github.com/MaxGalindo150/deeprl.git
    ```
 2. **Create a new branch**:
    ```bash
@@ -146,7 +146,7 @@ Contributions are welcome! To contribute, follow these steps:
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/MaxGalindo150/DeepRL/blob/main/LICENSE) file for more details.
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/MaxGalindo150/deeprl/blob/main/LICENSE) file for more details.
 
 ---
 

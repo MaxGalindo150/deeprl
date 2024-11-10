@@ -1,7 +1,7 @@
-Introduction to DeepRL
+Introduction to deeprl
 ======================
 
-DeepRL is a reinforcement learning library designed to simplify the development, experimentation, and deployment of reinforcement learning algorithms. With a modular design, DeepRL is ideal for both researchers and developers looking to explore and build RL solutions quickly and efficiently.
+deeprl is a reinforcement learning library designed to simplify the development, experimentation, and deployment of reinforcement learning algorithms. With a modular design, deeprl is ideal for both researchers and developers looking to explore and build RL solutions quickly and efficiently.
 
 **Key Features:**
 
@@ -13,11 +13,11 @@ DeepRL is a reinforcement learning library designed to simplify the development,
 
 - **Practical examples**: Comes with ready-to-use examples to get you started quickly.
 
-**Why use DeepRL?**
-DeepRL combines the simplicity of an intuitive design with the power of best practices in reinforcement learning. Unlike other libraries, it offers a clear and extensible architecture that makes it easy to customize algorithms and integrate with other projects.
+**Why use deeprl?**
+deeprl combines the simplicity of an intuitive design with the power of best practices in reinforcement learning. Unlike other libraries, it offers a clear and extensible architecture that makes it easy to customize algorithms and integrate with other projects.
 
 **General Architecture:**
-DeepRL is structured into distinct modules to promote modularity and ease of use. Below is an overview of the main components:
+deeprl is structured into distinct modules to promote modularity and ease of use. Below is an overview of the main components:
 
 - `agents`: Contains the base agent class (`base_agent.py`) and specific agent implementations such as `dqn.py`, `ppo.py`, and `sarsa.py`, and others. This module provides a flexible framework for developing and managing agents.
 
@@ -31,7 +31,7 @@ The project structure ensures that related classes and implementations are organ
 
 
 **Quick Example:**
-Here's a quick example of how to train an agent using DeepRL with the DQN algorithm:
+Here's a quick example of how to train an agent using deeprl with the DQN algorithm:
 
 .. code-block:: python
 
@@ -50,7 +50,7 @@ Here's a quick example of how to train an agent using DeepRL with the DQN algori
     # Evaluate the agent
     agent.evaluate()
 
-This example demonstrates how easy it is to get started with DeepRL by training an agent in a classic control environment.
+This example demonstrates how easy it is to get started with deeprl by training an agent in a classic control environment.
 
 **Next Steps:**
-To learn more about how to install DeepRL and set up your development environment, check out the **Installation** section.
+To learn more about how to install deeprl and set up your development environment, check out the **Installation** section.
