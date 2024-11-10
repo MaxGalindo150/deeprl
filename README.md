@@ -49,7 +49,7 @@ pip install deeprl
 
 ## Quick Start
 
-Here’s how to train a **Value Iteration Agent** on the `FrozenLake-v1` environment:
+Here’s how to train a **Q-Learning** agent on the `MountainCar` environment:
 
 ```python
 from deeprl.environments import GymnasiumEnvWrapper
