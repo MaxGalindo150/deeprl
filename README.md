@@ -1,70 +1,114 @@
+Aquí tienes una versión mejorada de tu `README.md`, incorporando lo que hemos desarrollado hasta ahora:
+
+---
+
 # DeepRL
 
 [![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-**DeepRL** is a deep reinforcement learning library based on PyTorch. It is designed for advanced researchers and developers looking for a flexible and extensible framework to implement, test, and optimize reinforcement learning algorithms.
+**DeepRL** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments.
 
-## Features
+---
 
-- Implementation of dynamic programming algorithms like Value Iteration and Policy Iteration.
-- Seamless integration with Gymnasium environments.
-- Support for saving and loading trained models.
-- Modular and easy-to-extend interface.
+## Key Features
+
+- **Dynamic Programming Agents**:
+  - Implementation of **Value Iteration** and **Policy Iteration** algorithms.
+- **Function Approximations**:
+  - Support for linear and non-linear function approximation using techniques like **Radial Basis Functions (RBF)**, **Polynomial Features**, and **Neural Networks**.
+- **Reward Shaping**:
+  - Includes strategies like **Distance-Based Shaping**, **Potential-Based Shaping**, and **Step Penalty Shaping** to improve learning in sparse reward environments.
+- **Seamless Integration**:
+  - Compatible with **Gymnasium environments**, simplifying the setup and testing of RL agents.
+- **Progress Monitoring**:
+  - Verbose mode for tracking rewards, steps, and exploration rates during training.
+- **Model Persistence**:
+  - Save and load models easily for reproducibility and testing.
+
+---
 
 ## Installation
 
-You can install **DeepRL** from PyPI with:
+Install **DeepRL** directly from PyPI:
 
 ```bash
 pip install deeprl
 ```
 
-### Prerequisites
+### Requirements
 
 - Python 3.9 or higher
-- Dependencies: NumPy, Pytorch, Gymnasium, among others.
+- Dependencies:
+  - NumPy
+  - PyTorch
+  - Gymnasium
+  - Scikit-learn
 
-## Getting Started
+---
 
-Here's a quick example of how to use **DeepRL** to train a Value Iteration agent on `FrozenLake-v1`:
+## Quick Start
+
+Here’s how to train a **Value Iteration Agent** on the `FrozenLake-v1` environment:
 
 ```python
-import gymnasium
-from deeprl.agents import ValueIterationAgent
+from deeprl.environments import GymnasiumEnvWrapper
+from deeprl.agents.q_learning_agent import QLearningAgent
+from deeprl.function_approximations import RBFBasisApproximator
+from deeprl.reward_shaping import MountainCarRewardShaping
 
-# Create the environment
-env = gymnasium.make('FrozenLake-v1', is_slippery=False)
+def main():
+    
+    # Initialize the environment and approximator
+    env = GymnasiumEnvWrapper('MountainCar-v0')
+    approximator = RBFBasisApproximator(env=env, gamma=0.5, n_components=500)
+        
+    agent = QLearningAgent(
+        env=env,
+        learning_rate=0.1,
+        discount_factor=0.99,
+        is_continuous=True,
+        approximator=approximator,
+        reward_shaping=MountainCarRewardShaping(),
+        verbose=True
+    )
+    
+    # Train the agent
+    agent.learn(episodes=10000, max_steps=10000, save_train_graph=True)
+    
+    # Evaluate the agent
+    rewards = agent.interact(episodes=10, render=True, save_test_graph=True)
 
-# Create and train the agent
-agent = ValueIterationAgent(env)
-agent.learn()
-
-# Test the agent
-state, _ = env.reset()
-done = False
-env.render()
-
-while not done:
-    action = agent.act(state)
-    state, reward, done, truncated, info = env.step(action)
-    env.render()
-
-env.close()
+if __name__ == '__main__':
+    main()
 ```
+
+---
 
 ## Features Overview
 
 ### 1. Dynamic Programming Agents
-- **ValueIterationAgent**: An agent that uses the Value Iteration algorithm to learn the optimal policy.
-- **PolicyIterationAgent**: An agent that uses the Policy Iteration algorithm.
+- **ValueIterationAgent**: Uses the Value Iteration algorithm to compute the optimal policy.
+- **PolicyIterationAgent**: Implements the Policy Iteration algorithm for policy optimization.
 
-### 2. Integration with Gymnasium
-**DeepRL** integrates smoothly with Gymnasium environments, enabling experimentation with various reinforcement learning scenarios.
+### 2. Function Approximations
+Support for approximating value functions or policies using:
+- **Linear Approximators**: Efficient for linearly separable problems.
+- **Radial Basis Function (RBF) Approximators**: Captures non-linear patterns in continuous spaces.
+- **Polynomial Approximators**: Expands features for higher-dimensional representation.
+- **Neural Network Approximators**: For complex, non-linear function approximation.
 
-## Saving and Loading Agents
+### 3. Reward Shaping
+Enhance learning in sparse or uninformative environments with:
+- **Distance-Based Shaping**: Rewards progress toward a specific goal.
+- **Potential-Based Shaping**: Ensures policy invariance while guiding exploration.
+- **Step Penalty Shaping**: Penalizes excessive steps to encourage efficiency.
 
-You can easily save and load the agent's parameters using the `save()` and `load()` methods:
+### 4. Integration with Gymnasium
+Easily integrate with a wide range of Gymnasium environments, supporting both discrete and continuous action/state spaces.
+
+### 5. Saving and Loading Agents
+Persist agent parameters for reproducibility or testing:
 
 ```python
 # Save the agent's parameters
@@ -74,21 +118,43 @@ agent.save('value_iteration_agent.pkl')
 agent.load('value_iteration_agent.pkl')
 ```
 
-## Contributions
+---
 
-Contributions are welcome! If you'd like to contribute, please follow these steps:
+## Contribution Guidelines
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/new-feature`).
-3. Make your changes and commit them (`git commit -am 'Add new feature'`).
-4. Push your branch (`git push origin feature/new-feature`).
-5. Open a pull request.
+Contributions are welcome! To contribute, follow these steps:
+
+1. **Fork the repository**:
+   ```bash
+   git clone https://github.com/MaxGalindo150/DeepRL.git
+   ```
+2. **Create a new branch**:
+   ```bash
+   git checkout -b feature/new-feature
+   ```
+3. **Make your changes and commit**:
+   ```bash
+   git commit -am 'Add new feature'
+   ```
+4. **Push your branch**:
+   ```bash
+   git push origin feature/new-feature
+   ```
+5. **Open a pull request** on the main repository.
+
+---
 
 ## License
 
-This project is licensed under the MIT License. For more details, check the [LICENSE](https://github.com/MaxGalindo150/DeepRL/blob/main/LICENSE) file.
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/MaxGalindo150/DeepRL/blob/main/LICENSE) file for more details.
+
+---
 
 ## Contact
 
-Author: Maximiliano Galindo  
-Email: maximilianogalindo7@gmail.com
+For inquiries or collaboration, feel free to reach out:
+
+- **Author**: Maximiliano Galindo  
+- **Email**: [maximilianogalindo7@gmail.com](mailto:maximilianogalindo7@gmail.com)
+
+
