@@ -46,11 +46,6 @@ def test_learn(q_learning_agent):
     assert len(rewards) == 10
     assert all(isinstance(r, (float, int)) for r in rewards)
 
-def test_interact(q_learning_agent):
-    """Test the agent's interaction with the environment."""
-    rewards = q_learning_agent.interact(episodes=5, max_steps=50)
-    assert len(rewards) == 5
-    assert all(isinstance(r, (float, int)) for r in rewards)
 
 def test_save_and_load(q_learning_agent, tmp_path):
     """Test saving and loading the Q-table."""

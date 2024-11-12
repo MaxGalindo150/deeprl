@@ -56,7 +56,7 @@ class QLearningAgent(Agent):
             q_values = self.q_table[state]
         return self.policy.select_action(q_values)
     
-    def learn(self, episodes=1000, max_steps=100, save_train_graph=False):
+    def learn(self, episodes=1000, max_steps=100):
         """
         Train the agent by updating the Q-table.
         
@@ -65,7 +65,6 @@ class QLearningAgent(Agent):
         :param save_train_graph: Whether to save a graph of the training progress.
         """
         episode_rewards = []
-        progress_board = ProgressBoard(xlabel="Episode", ylabel="Cumulative Reward", save_path="q_learning_training.png")
 
         # Display header for progress if verbose is enabled
         if self.verbose:
@@ -97,15 +96,11 @@ class QLearningAgent(Agent):
             self.policy.update()
             episode_rewards.append(total_reward)
             
-            if save_train_graph:
-                progress_board.record(total_reward)
 
             avg_reward = sum(episode_rewards) / (episode + 1)
             if episode % 100 == 0 and self.verbose:
                 print_progress(episode + 1, total_reward, avg_reward, steps, self.policy.epsilon)
                 
-        if save_train_graph:
-            progress_board.save()
         return episode_rewards
 
     def update_q_table(self, state_features, action, reward, next_state, done):
@@ -130,58 +125,6 @@ class QLearningAgent(Agent):
         
         return torch.matmul(state_features, self.approximator.weights[:, action])
     
-    def interact(self, episodes=1, max_steps=100, render=False, save_test_graph=False):
-        """
-        Evaluate the agent in the environment without updating Q-table.
-        
-        :param episodes: The number of episodes to test the agent.
-        :param max_steps: The maximum number of steps per episode.
-        :param render: Whether to render the environment.
-        :param save_test_graph: Whether to save a graph of the test progress.
-        """
-        episode_rewards = []
-        progress_board = ProgressBoard(xlabel="Episode", ylabel="Cumulative Reward", save_path="q_learning_test.png")
-
-        if render:
-            env = self.recreate_env_with_render()
-        else:
-            env = self.env
-
-        for episode in range(episodes):
-            state = env.reset()
-            total_reward = 0
-
-            for _ in range(max_steps):
-                if render:
-                    env.render()
-
-                if self.is_continuous:
-                    state_features = self.approximator.compute_features(state)
-                    q_values = torch.matmul(state_features, self.approximator.weights)
-                    action = torch.argmax(q_values).item()
-                else:
-                    action = torch.argmax(self.q_table[state]).item()
-
-                next_state, reward, done, truncated, info = env.step(action)
-                total_reward += reward
-                state = next_state
-
-                if done:
-                    break
-
-            episode_rewards.append(total_reward)
-            
-         
-            if save_test_graph:
-                progress_board.record(total_reward)
-
-        if save_test_graph:
-            progress_board.save()
-
-        if render:
-            env.close()  # Ensure proper cleanup
-
-        return episode_rewards
 
     def save(self, filepath):
         """Save the complete agent state using PyTorch.
@@ -233,7 +176,8 @@ class QLearningAgent(Agent):
         env_kwargs['render_mode'] = 'human'
         env = GymnasiumEnvWrapper(env=env_name, **env_kwargs)
         return env
-    
-
-            
+           
+        
+    def get_env(self):
+        return self.env
         

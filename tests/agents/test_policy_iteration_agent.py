@@ -36,16 +36,7 @@ def test_act_returns_valid_action(frozen_lake_env):
     action = agent.act(state)
     assert 0 <= action < frozen_lake_env.action_space.n, "Action should be within the valid action space."
 
-def test_interact_episodes(frozen_lake_env):
-    """Test that interact runs for a set number of episodes and returns rewards."""
-    agent = PolicyIterationAgent(frozen_lake_env)
-    agent.learn()
-    
-    num_episodes = 5
-    rewards = agent.interact(num_episodes=num_episodes)
-    
-    assert len(rewards) == num_episodes, "The length of rewards should match the number of episodes."
-    assert all(isinstance(r, (int, float)) for r in rewards), "All episode rewards should be numeric."
+
 
 def test_save_and_load(frozen_lake_env, tmp_path):
     """Test saving and loading the agent's parameters."""
