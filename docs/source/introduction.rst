@@ -1,7 +1,7 @@
-Introduction to DeepRL
+Introduction to deeprl
 ======================
 
-DeepRL is a reinforcement learning library designed to simplify the development, experimentation, and deployment of reinforcement learning algorithms. With a modular design, DeepRL is ideal for both researchers and developers looking to explore and build RL solutions quickly and efficiently.
+deeprl is a reinforcement learning library designed to simplify the development, experimentation, and deployment of reinforcement learning algorithms. With a modular design, deeprl is ideal for both researchers and developers looking to explore and build RL solutions quickly and efficiently.
 
 **Key Features:**
 
@@ -13,17 +13,17 @@ DeepRL is a reinforcement learning library designed to simplify the development,
 
 - **Practical examples**: Comes with ready-to-use examples to get you started quickly.
 
-**Why use DeepRL?**
-DeepRL combines the simplicity of an intuitive design with the power of best practices in reinforcement learning. Unlike other libraries, it offers a clear and extensible architecture that makes it easy to customize algorithms and integrate with other projects.
+**Why use deeprl?**
+deeprl combines the simplicity of an intuitive design with the power of best practices in reinforcement learning. Unlike other libraries, it offers a clear and extensible architecture that makes it easy to customize algorithms and integrate with other projects.
 
 **General Architecture:**
-DeepRL is structured into distinct modules to promote modularity and ease of use. Below is an overview of the main components:
+deeprl is structured into distinct modules to promote modularity and ease of use. Below is an overview of the main components:
 
-- `agents`: Contains the base agent class (`base_agent.py`) and specific agent implementations such as `dqn.py`, `ppo.py`, and `sarsa.py`, and others. This module provides a flexible framework for developing and managing agents.
+- ``agents``: Contains the base agent class (``base_agent.py``) and specific agent implementations such as ``dqn.py``, ``ppo.py``, and ``sarsa.py``, and others. This module provides a flexible framework for developing and managing agents.
 
-- `environments`: Includes `base_environment.py` for defining custom environment classes and `gymnasium_env_wrapper.py` for integrating with Gymnasium-based environments. This module helps in managing different types of training and testing environments seamlessly.
+- ``environments``: Includes ``base_environment.py`` for defining custom environment classes and ``gymnasium_env_wrapper.py`` for integrating with Gymnasium-based environments. This module helps in managing different types of training and testing environments seamlessly.
   
-- `policies`: Defines various policy strategies, including `base_policy.py` for the policy interface and specialized implementations like `deterministic_policy.py`, `epsilon_greedy_policy.py`, and `softmax_policy.py`. This module allows for flexible policy management.
+- ``policies``: Defines various policy strategies, including ``base_policy.py`` for the policy interface and specialized implementations like ``deterministic_policy.py``, ``epsilon_greedy_policy.py``, and ``softmax_policy.py``. This module allows for flexible policy management.
 
 
 **Directory Overview:**
@@ -31,26 +31,41 @@ The project structure ensures that related classes and implementations are organ
 
 
 **Quick Example:**
-Here's a quick example of how to train an agent using DeepRL with the DQN algorithm:
+Here's a quick example of how to train an agent using deeprl with the Q-Learning algorithm with function approximation and reward shaping:
 
 .. code-block:: python
 
-    from deeprl.agents import DQN
-    from deeprl.environments import GymasiumEnvWrapper
+    from deeprl.environments import GymnasiumEnvWrapper
+    from deeprl.agents.q_learning_agent import QLearningAgent
+    from deeprl.function_approximations import RBFBasisApproximator
+    from deeprl.reward_shaping import MountainCarRewardShaping
 
-    # Initialize the environment
-    env = GymEnvWrapper('CartPole-v1')
+    def main():
+        
+        # Initialize the environment and approximator
+        env = GymnasiumEnvWrapper('MountainCar-v0')
+        approximator = RBFBasisApproximator(env=env, gamma=0.5, n_components=500)
+            
+        agent = QLearningAgent(
+            env=env,
+            learning_rate=0.1,
+            discount_factor=0.99,
+            is_continuous=True,
+            approximator=approximator,
+            reward_shaping=MountainCarRewardShaping(),
+            verbose=True
+        )
+        
+        # Train the agent
+        agent.learn(episodes=10000, max_steps=10000, save_train_graph=True)
+        
+        # Evaluate the agent
+        rewards = agent.interact(episodes=10, render=True, save_test_graph=True)
 
-    # Initialize the DQN agent
-    agent = DQN(env)
+    if __name__ == '__main__':
+        main()
 
-    # Train the agent
-    agent.learn(episodes=100)
-
-    # Evaluate the agent
-    agent.evaluate()
-
-This example demonstrates how easy it is to get started with DeepRL by training an agent in a classic control environment.
+This example demonstrates how easy it is to get started with deeprl by training an agent in a classic control environment.
 
 **Next Steps:**
-To learn more about how to install DeepRL and set up your development environment, check out the **Installation** section.
+To learn more about how to install deeprl and set up your development environment, check out the **Installation** section.

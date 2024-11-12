@@ -4,6 +4,15 @@ DeterministicPolicy
 
 The `DeterministicPolicy` class implements a policy that consistently selects the same action for a given state.
 
+************************
+How It Works
+************************
+
+The `DeterministicPolicy` class selects the action with the highest value for a given state. This policy is deterministic and does not introduce randomness in the action selection process.
+
+The `DeterministicPolicy` class is useful in scenarios where the agent needs to follow a specific action sequence or when the environment is deterministic.
+
+
 ***********************
 Example
 ***********************

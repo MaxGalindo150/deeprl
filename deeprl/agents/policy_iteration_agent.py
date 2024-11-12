@@ -45,7 +45,7 @@ class PolicyIterationAgent(Agent):
         for state in range(self.env.observation_space.n):
             old_action = self.policy.select_action(state)
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, np.argmax(q_values).item())
+            self.policy.update(state, np.argmax(q_values).item())
             if old_action != self.policy.select_action(state):
                 policy_stable = False
         return policy_stable
@@ -79,37 +79,6 @@ class PolicyIterationAgent(Agent):
         
         self.policy_iteration()
 
-    def interact(self, num_episodes=1, render=False):
-        """
-        Interact with the environment following the learned policy for a given number of episodes.
-        
-        :param num_episodes: The number of episodes to run.
-        :param render: Whether to render the environment.
-        """
-        episode_rewards = []
-        
-        for episode in range(num_episodes):
-            state = self.env.reset()
-            done = False
-            total_reward = 0
-            
-            while not done:
-                if render:
-                    self.env.render()
-                
-                action = int(self.act(state))
-                next_state, reward, done, truncated, info = self.env.step(action)
-                total_reward += reward
-                state = next_state
-            
-            episode_rewards.append(total_reward)
-            if render:
-                print(f"Episode {episode + 1}: Total Reward = {total_reward}")
-        
-        if render:
-            self.env.close()
-        
-        return episode_rewards
 
     def save(self, filepath):
         """
@@ -139,3 +108,7 @@ class PolicyIterationAgent(Agent):
         self.value_table = np.array(data['value_table'])
         self.policy.policy_table = np.array([data['policy'][str(state)] for state in range(len(data['policy']))])
         print(f"Agent's parameters loaded from {filepath}")
+        
+        
+    def get_env(self):
+        return self.env

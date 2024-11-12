@@ -4,13 +4,13 @@ from deeprl.policies.base_policy import BasePolicy
 class DeterministicPolicy(BasePolicy):
     """
     Deterministic policy implementation.
+    
+    :param observation_space: The observation space.
     """
     
     def __init__(self, observation_space):
         """
         Initialize the policy.
-        
-        :param observation_space: The observation space.
         """
         self.policy_table = torch.zeros(observation_space.n)
     
@@ -29,7 +29,7 @@ class DeterministicPolicy(BasePolicy):
             raise KeyError(f"State {state} not found in policy_table.")
         
     
-    def update_policy(self, state, value):
+    def update(self, state, value):
         """
         Update the policy with the given state and value.
         

@@ -43,13 +43,3 @@ def test_save_and_load(frozen_lake_env, tmp_path):
     assert np.array_equal(agent.V, new_agent.V), "Loaded value table does not match the saved table."
     assert np.array_equal(agent.policy.policy_table, new_agent.policy.policy_table), "Loaded policy does not match the saved policy."
 
-def test_interact_episodes(frozen_lake_env):
-    """Test that interact runs for a set number of episodes and returns rewards."""
-    agent = ValueIterationAgent(frozen_lake_env)
-    agent.learn()
-    
-    num_episodes = 5
-    rewards = agent.interact(num_episodes=num_episodes)
-    
-    assert len(rewards) == num_episodes, "The length of rewards should match the number of episodes."
-    assert all(isinstance(r, (int, float)) for r in rewards), "All episode rewards should be numeric."

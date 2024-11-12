@@ -116,3 +116,4 @@ See Also
 ************************************
 
 - :class:`~deeprl.agents.value_iteration_agent.ValueIterationAgent` for an alternative dynamic programming method that uses value iteration to find the optimal policy.
+- :class:`~deeprl.agents.q_learning_agent.QLearningAgent` for a model-free reinforcement learning agent that learns the optimal policy through Q-learning.

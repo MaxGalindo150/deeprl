@@ -67,7 +67,7 @@ class ValueIterationAgent(Agent):
         """
         for state in range(self.env.observation_space.n):
             q_values = self.compute_q_values(state)
-            self.policy.update_policy(state, np.argmax(q_values).item())
+            self.policy.update(state, np.argmax(q_values).item())
     
     def act(self, state):
         """
@@ -118,33 +118,5 @@ class ValueIterationAgent(Agent):
         self.policy.policy_table = np.array([data['policy'][str(state)] for state in range(len(data['policy']))])
         print(f"Agent's parameters loaded from {filepath}")
     
-    def interact(self, num_episodes=1, render=False):
-        """
-        Interact with the environment following the learned policy for a given number of episodes.
-        
-        :param num_episodes: Number of episodes to run.
-        :param render: If True, render the environment during interaction.
-        :return: List of total rewards obtained in each episode.
-        """
-        episode_rewards = []
-        
-        for episode in range(num_episodes):
-            state = self.env.reset()
-            done = False
-            total_reward = 0
-            
-            while not done:
-                if render:
-                    self.env.render()
-                
-                action = int(self.act(state))
-                next_state, reward, done, truncated, info = self.env.step(action)
-                total_reward += reward
-                state = next_state
-            
-            episode_rewards.append(total_reward)
-            self.env.close()
-            if render:
-                print(f"Episode {episode + 1}: Total Reward = {total_reward}")
-        
-        return episode_rewards
+    def get_env(self):
+        return self.env

@@ -1,18 +1,23 @@
+#####################
 EpsilonGreedyPolicy
-===================
-The `EpsilonGreedyPolicy` class implements an exploration strategy where actions are selected randomly with a probability epsilon, promoting exploration, while the best-known action is taken with a probability of 1 - epsilon.
+#####################
 
-.. autoclass:: deeprl.policies.EpsilonGreedyPolicy
-   :members:
-   :undoc-members:
-   :show-inheritance:
+The `EpsilonGreedyPolicy` class implements an exploration strategy where actions are selected randomly with a probability epsilon, promoting exploration, while the best-known action is taken with a probability of :math:`1 - \epsilon`.
 
-**Attributes:**
-- `epsilon` (float): The exploration rate, a value between 0 and 1, indicating the probability of taking a random action.
-- `select_action`: Method that selects an action based on the current policy logic.
+************************
+How It Works
+************************
 
-**Example Usage**:
-Here's a simple example of how to create and use an `EpsilonGreedyPolicy`:
+The `EpsilonGreedyPolicy` class balances exploration and exploitation by introducing randomness in the action selection process. The `epsilon` parameter controls this randomness:
+
+- A high `epsilon` value (e.g., 0.9) encourages more exploration.
+
+- A low `epsilon` value (e.g., 0.1) focuses more on exploiting known actions that yield better results.
+
+
+***********************
+Example
+***********************
 
 .. code-block:: python
 
@@ -27,17 +32,21 @@ Here's a simple example of how to create and use an `EpsilonGreedyPolicy`:
 
     print(f"Selected action: {action}")
 
-**Details**:
-The `EpsilonGreedyPolicy` class balances exploration and exploitation by introducing randomness in the action selection process. The `epsilon` parameter controls this randomness:
-- A high `epsilon` value (e.g., 0.9) encourages more exploration.
-- A low `epsilon` value (e.g., 0.1) focuses more on exploiting known actions that yield better results.
 
-**Best Practices**:
-- Adjust `epsilon` dynamically (e.g., with epsilon decay) during training to start with more exploration and gradually shift towards exploitation as the model learns.
-- Use `epsilon` values that suit your problem's exploration-exploitation trade-off.
+***********************
+Parameters
+***********************
 
-**Method Summary**:
-- `select_action(self, action_values)`: Selects an action using the epsilon-greedy strategy.
+.. autoclass:: deeprl.policies.epsilon_greedy_policy.EpsilonGreedyPolicy
+   :members:
+   :inherited-members:
 
-**See Also**:
-- :class:`~deeprl.policies.SoftmaxPolicy` for an alternative policy that uses softmax for action selection.
+***********************
+See Also
+***********************
+
+- :class:`~deeprl.policies.base_policy.BasePolicy` for the base class that `EpsilonGreedyPolicy` inherits from.
+- :class:`~deeprl.policies.epsilon_greedy_decay_policy.EpsilonGreedyDecayPolicy` for a policy that selects actions based on the epsilon-greedy strategy with a decaying epsilon value.
+- :class:`~deeprl.policies.softmax_policy.SoftmaxPolicy` for a policy that selects actions based on the softmax strategy.
+- :class:`~deeprl.policies.deterministic_policy.DeterministicPolicy` for a policy that consistently selects the same action for a given state.
+

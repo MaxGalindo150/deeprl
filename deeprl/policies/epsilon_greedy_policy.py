@@ -5,6 +5,10 @@ from deeprl.policies.base_policy import BasePolicy
 class EpsilonGreedyPolicy(BasePolicy):
     """
     Epsilon-greedy policy for exploration and exploitation.
+    
+    :param epsilon: Probability of choosing a random action.
+    :param decay: Whether to decay epsilon over time.
+    :param decay_rate: Rate of epsilon decay.
     """
 
     def __init__(self, epsilon=0.1):
@@ -14,7 +18,7 @@ class EpsilonGreedyPolicy(BasePolicy):
         :param epsilon: Probability of choosing a random action.
         """
         self.epsilon = epsilon
-
+    
     def select_action(self, q_values):
         """
         Select an action based on epsilon-greedy policy.
@@ -36,3 +40,7 @@ class EpsilonGreedyPolicy(BasePolicy):
         :param epsilon: New epsilon value.
         """
         self.epsilon = epsilon
+        
+    def update(self):
+        
+        pass

@@ -1,10 +1,10 @@
 Frequently Asked Questions (FAQ)
 ================================
 
-Below are some common questions and answers about using DeepRL. If you have additional questions, please feel free to reach out through our GitHub repository or contact our support.
+Below are some common questions and answers about using deeprl. If you have additional questions, please feel free to reach out through our GitHub repository or contact our support.
 
-**1. How do I install DeepRL?**
-   - You can install DeepRL using `pip`:
+**1. How do I install deeprl?**
+   - You can install deeprl using `pip`:
    
      .. code-block:: bash
 
@@ -12,8 +12,8 @@ Below are some common questions and answers about using DeepRL. If you have addi
 
      Make sure you have Python 3.7 or higher and `torch` installed. If you encounter any installation issues, check the **Installation** section for detailed steps.
 
-**2. What are the system requirements for running DeepRL?**
-   - DeepRL requires Python 3.7 or newer and is compatible with major operating systems (Linux, macOS, Windows). Ensure you have `torch` and other dependencies listed in the **Installation** section.
+**2. What are the system requirements for running deeprl?**
+   - deeprl requires Python 3.7 or newer and is compatible with major operating systems (Linux, macOS, Windows). Ensure you have `torch` and other dependencies listed in the **Installation** section.
 
 **3. How do I create a custom neural network architecture?**
    - Create a new class that inherits from `BaseNetwork` and implement your custom layers and `forward()` method:
@@ -42,7 +42,7 @@ Below are some common questions and answers about using DeepRL. If you have addi
 
      to verify the installation. If the issue persists, check your `PYTHONPATH` and make sure it includes the path to your project.
 
-**5. How can I integrate my custom environment with DeepRL?**
+**5. How can I integrate my custom environment with deeprl?**
    - To use a custom environment, ensure that it adheres to the `BaseEnvironment` interface. Here's an example of wrapping a custom Gymnasium environment:
 
      .. code-block:: python
@@ -63,10 +63,10 @@ Below are some common questions and answers about using DeepRL. If you have addi
    
      Make sure to profile your code and experiment with different settings to identify bottlenecks.
 
-**7. Can I contribute to DeepRL?**
+**7. Can I contribute to deeprl?**
    - Absolutely! We welcome contributions. Please refer to the **Contributing** section for guidelines on how to submit pull requests, report issues, and propose new features.
 
-**8. How do I add a new policy to DeepRL?**
+**8. How do I add a new policy to deeprl?**
    - Extend the `BasePolicy` class and implement the necessary methods. For example:
 
      .. code-block:: python

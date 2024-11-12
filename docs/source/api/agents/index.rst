@@ -9,3 +9,4 @@ The `agents` module contains classes for reinforcement learning agents, includin
    agent
    value_iteration_agent
    policy_iteration_agent
+   q_learning_agent

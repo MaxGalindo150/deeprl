@@ -19,11 +19,12 @@ class BasePolicy(ABC):
         """
         pass
 
-    def update_policy(self, *args, **kwargs):
+    
+    @abstractmethod
+    def update(self, **kwargs):
         """
-        Updates the policy based on provided parameters (optional).
+        Updates the policy based on provided keyword arguments (optional).
         
-        :param args: Additional positional arguments.
         :param kwargs: Additional keyword arguments.
         """
         pass

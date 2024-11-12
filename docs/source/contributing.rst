@@ -1,7 +1,7 @@
-Contributing to DeepRL
+Contributing to deeprl
 ======================
 
-We are excited that you are interested in contributing to DeepRL! Contributions from the community help improve and expand the project. Whether you're reporting a bug, suggesting a new feature, or contributing code, your input is highly valued.
+We are excited that you are interested in contributing to deeprl! Contributions from the community help improve and expand the project. Whether you're reporting a bug, suggesting a new feature, or contributing code, your input is highly valued.
 
 **How to Contribute:**
 ----------------------
@@ -11,7 +11,7 @@ We are excited that you are interested in contributing to DeepRL! Contributions 
 **Setting Up Your Development Environment:**
 --------------------------------------------
 1. **Fork the repository**:
-   Visit the `DeepRL GitHub repository <https://github.com/MaxGalindo150/deeprl>`_ and click on "Fork" to create your own copy.
+   Visit the `deeprl GitHub repository <https://github.com/MaxGalindo150/deeprl>`_ and click on "Fork" to create your own copy.
 
 2. **Clone the repository**:
    Clone your forked repository to your local machine:
@@ -92,4 +92,4 @@ Once you submit a pull request, one of the maintainers will review your code. Be
 
 **Thank You!**
 --------------
-Thank you for considering contributing to DeepRL! Your contributions make the project better for everyone.
+Thank you for considering contributing to deeprl! Your contributions make the project better for everyone.

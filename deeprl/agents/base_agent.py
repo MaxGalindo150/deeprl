@@ -85,19 +85,14 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def interact(self, env, episodes=1):
+    def get_env(self):
         """
-        Interact with the environment over a specified number of episodes.
+        Return the environment associated with the agent.
 
-        **Abstract Method:** Defines how the agent interacts with the 
-        environment, typically used to gather experience or evaluate 
-        performance.
-
-        :param env: The environment to interact with.
-        :type env: gymnasium.Env
-        :param episodes: Number of episodes for interaction.
-        :type episodes: int
-        :return: A list of accumulated rewards per episode.
-        :rtype: list
+        **Abstract Method:** Must be implemented by subclasses to return 
+        the environment object associated with the agent.
+        
+        :return: The environment object.
+        :rtype: object
         """
         pass
