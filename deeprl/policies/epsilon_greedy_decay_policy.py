@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from deeprl.policies.base_policy import BasePolicy
+from deeprl.common.base_policy import BasePolicy
 
 class EpsilonGreedyDecayPolicy(BasePolicy):
     """

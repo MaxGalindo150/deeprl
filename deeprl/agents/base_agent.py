@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
 
+from pathlib import Path
+import torch
+
+
 class Agent(ABC):
     """
     Base class for all reinforcement learning agents.
@@ -96,3 +100,62 @@ class Agent(ABC):
         :rtype: object
         """
         pass
+    
+
+    @staticmethod
+    def _save_to_file(save_path, data=None, params=None, cloudpickle=False):
+        """
+        Save model data and parameters to a file, automatically adding a file extension if needed.
+
+        :param save_path: (str or pathlib.Path) The base path to save the model to (without extension).
+        :param data: (dict) Additional data to save.
+        :param params: (dict) Model parameters to save.
+        :param cloudpickle: (bool) Whether to use cloudpickle for serialization.
+        """
+        # Ensure save_path is a Path object and add default extension if not present
+        save_path = Path(save_path)
+        if save_path.suffix == "":
+            save_path = save_path.with_suffix(".pth")  # Default extension
+
+        # Save the data and parameters
+        with open(save_path, "wb") as file:
+            if cloudpickle:
+                import cloudpickle
+                cloudpickle.dump((data, params), file)
+            else:
+                import pickle
+                pickle.dump((data, params), file)
+
+        print(f"Model saved to {save_path}")
+
+    
+    @classmethod
+    def load(cls, filepath):
+        """
+        Load an agent from a saved file.
+
+        :param filepath: Path to the file to load the agent from (without extension).
+        :return: An instance of the agent.
+        """
+        filepath = filepath + ".pth"
+        state = torch.load(filepath)
+        
+        # Dynamically create the agent
+        agent = cls(
+            env=None,  # Placeholder, must be set after loading
+            policy=None,  # Will be reconstructed
+            reward_shaping=None  # Will be reconstructed
+        )
+        
+        # Restore parameters
+        agent.is_continuous = state["is_continuous"]
+        if agent.is_continuous:
+            agent.approximator.weights = torch.tensor(state["weights"])
+        else:
+            agent.q_table = torch.tensor(state["q_table"])
+        agent.policy = state.get("policy") 
+        agent.reward_shaping = state.get("reward_shaping")
+        agent.learning_rate = state["learning_rate"]
+        agent.discount_factor = state["discount_factor"]
+        
+        return agent

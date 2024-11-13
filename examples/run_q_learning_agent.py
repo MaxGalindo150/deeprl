@@ -20,13 +20,19 @@ def main():
     )
     
     # Train the agent
-    agent.learn(episodes=100000, max_steps=10000)
+    agent.learn(episodes=100, max_steps=10000)
     
     # Evaluate the agent
+   
+    
+    agent.save('frozenlake_q_learning_agent')
+    
+    del agent
+    
+    agent = QLearningAgent.load('frozenlake_q_learning_agent')
     mean_reward, std_reward = evaluate_policy(agent, agent.get_env(), num_eval_episodes=10)
     
-    #agent.save('frozenlake_q_learning_agent')
-    #agent.print_saved_config('frozenlake_q_learning_agent')
     print(f'Mean reward: {mean_reward}, Std reward: {std_reward}')
+
 if __name__ == '__main__':
     main()

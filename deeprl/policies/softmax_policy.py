@@ -1,5 +1,5 @@
 import torch
-from deeprl.policies.base_policy import BasePolicy
+from deeprl.common.base_policy import BasePolicy
 
 class SoftmaxPolicy(BasePolicy):
     """"
