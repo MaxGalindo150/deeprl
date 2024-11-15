@@ -1,4 +1,3 @@
-
 import io
 import pathlib
 import time
@@ -146,7 +145,7 @@ class BaseAgent(ABC):
         self.use_sde = use_sde
         self.sde_sample_freq = sde_sample_freq
         # Track the trainig progress remaining (from 1 to 0)
-        # this is ised to update the learning rate
+        # this is used to update the learning rate
         self._current_progress_remaining = 1.0
         # Buffers for logging
         self._stats_window_size = stats_window_size
