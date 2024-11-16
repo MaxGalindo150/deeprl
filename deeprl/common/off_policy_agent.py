@@ -150,7 +150,7 @@ class OffPolicyAgent(BaseAgent):
         to a TrainFreq object.
         """
         
-        if not isinstance(train_freq, tuple):
+        if not isinstance(self.train_freq, tuple):
             train_freq = self.train_freq
             if not isinstance(train_freq, tuple):
                 train_freq = (train_freq, "step")

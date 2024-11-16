@@ -120,7 +120,7 @@ class BaseAgent(ABC):
         else:
             self.policy_class = policy
         
-        self.divece = get_device(device)
+        self.device = get_device(device)
         if verbose >= 1:
             print(f"Using {self.device} device")
         

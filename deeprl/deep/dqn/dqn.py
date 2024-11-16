@@ -11,9 +11,12 @@ from deeprl.common.off_policy_agent import OffPolicyAgent
 from deeprl.common.policies import BasePolicy
 from deeprl.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from deeprl.common.utils import get_linear_fn, get_parameters_by_name, polyak_update
-from deeprl.dqn.policies import CnnPolicy, DQNPolicy, MlpPolicy, MultiInputPolicy, QNetwork
+from deeprl.deep.dqn.policies import CnnPolicy, DQNPolicy, MlpPolicy, MultiInputPolicy, QNetwork
 
-SelfDQN = TypeVar("SelfDQN", "DQN")
+from typing import TypeVar
+
+SelfDQN = TypeVar("SelfDQN", bound="DQN")
+
 
 class DQN(OffPolicyAgent):
     """
@@ -222,3 +225,59 @@ class DQN(OffPolicyAgent):
 
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/loss", np.mean(losses))
+
+    def predict(
+        self,
+        observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        state: Optional[Tuple[np.ndarray, ...]] = None,
+        episode_start: Optional[bool] = None,
+        deterministic: bool = False,
+    ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
+        """
+        Overrides the base_class predict function to include epsilon-greedy exploration.
+
+        :param observation: the input observation
+        :param state: The last states (can be None, used in recurrent policies)
+        :param episode_start: The last masks (can be None, used in recurrent policies)
+        :param deterministic: Whether or not to return deterministic actions.
+        :return: the model's action and the next state
+            (used in recurrent policies)
+        """
+        if not deterministic and np.random.rand() < self.exploration_rate:
+            if self.policy.is_vectorized_observation(observation):
+                if isinstance(observation, dict):
+                    n_batch = observation[next(iter(observation.keys()))].shape[0]
+                else:
+                    n_batch = observation.shape[0]
+                action = np.array([self.action_space.sample() for _ in range(n_batch)])
+            else:
+                action = np.array(self.action_space.sample())
+        else:
+            action, state = self.policy.predict(observation, state, episode_start, deterministic)
+        return action, state
+            
+    def learn(
+        self: SelfDQN,
+        total_timesteps: int,
+        callback: MaybeCallback = None,
+        log_interval: int = 4,
+        tb_log_name: str = "DQN",
+        reset_num_timesteps: bool = True,
+        progress_bar: bool = False,
+    ) -> SelfDQN:
+        return super().learn(
+            total_timesteps=total_timesteps,
+            callback=callback,
+            log_interval=log_interval,
+            tb_log_name=tb_log_name,
+            reset_num_timesteps=reset_num_timesteps,
+            progress_bar=progress_bar,
+        )
+    
+    def _excluded_save_params(self) -> List[str]:
+        return [*super()._excluded_save_params(), "q_net", "q_net_target"]
+
+    def _get_torch_save_params(self) -> Tuple[List[str], List[str]]:
+        state_dicts = ["policy", "policy.optimizer"]
+
+        return state_dicts, []
