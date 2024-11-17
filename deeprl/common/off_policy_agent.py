@@ -191,7 +191,7 @@ class OffPolicyAgent(BaseAgent):
                 **replay_buffer_kwargs,
             )
             
-            self.policy = self.policy_class(
+        self.policy = self.policy_class(
             self.observation_space,
             self.action_space,
             self.lr_schedule,
