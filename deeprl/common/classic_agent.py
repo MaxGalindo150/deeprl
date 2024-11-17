@@ -94,6 +94,115 @@ class ClassicAgent(BaseAgent):
         """
         cf `BaseAgent`.
         """
+        assert self.env is not None, "You must set the environment before calling _setup_learn()"
+        
+        return super()._setup_learn(
+            total_timesteps,
+            callback,
+            reset_num_timesteps,
+            tb_log_name,
+            progress_bar,
+        )
+    
+    def learn(
+        self: SelfClassicAgent,
+        total_timesteps: int,
+        callback: MaybeCallback = None,
+        log_interval: int = 4,
+        tb_log_name: str = "run",
+        reset_num_timesteps: bool = True,
+        progress_bar: bool = False,
+    ) -> SelfClassicAgent:
+        total_timesteps, callback = self._setup_learn(
+            total_timesteps,
+            callback,
+            reset_num_timesteps,
+            tb_log_name,
+            progress_bar,
+        )
+        
+        callback.on_training_start(locals(), globals())
+        
+        assert self.env is not None, "You must set the environment before calling learn()"
+        
+        pass
+        
+    def collect_rollouts(
+        self,
+        env: VecEnv,
+        callback: BaseCallback,
+        log_interval: Optional[int] = None,
+    ) -> RolloutReturn:
+        """
+        Collect experiences for classical RL algorithms.
+
+        :param env: The training environment.
+        :param callback: Callback that will be called at each step and at the beginning and end of the rollout.
+        :param log_interval: Log data every ``log_interval`` episodes.
+        :return: RolloutReturn containing the number of collected steps and episodes.
+        """
+        # self.policy.set_training_mode(False) ----> No se necesita en este caso
+        num_collected_steps, num_collected_episodes = 0, 0
+
+        assert isinstance(env, VecEnv), "You must pass a VecEnv"
+
+        callback.on_rollout_start()
+        continue_training = True
+
+        while continue_training:
+            # Get the agent's action from the observation
+            action = self._sample_action(self._last_obs)
+
+            # Take a step in the environment
+            new_obs, reward, done, info = env.step(action)
+
+            # Update the total number of steps
+            self.num_timesteps += 1
+            num_collected_steps += 1
+
+            # Call the callback with the training update
+            callback.update_locals(locals())
+            if not callback.on_step():
+                continue_training = False
+                break
+
+            # # Actualizar la tabla Q o la función de aproximación
+            # self._store_transition(self._last_obs, action, reward, new_obs, done)
+
+            # Si se termina el episodio
+            if done:
+                num_collected_episodes += 1
+                self._episode_num += 1
+
+                # Reiniciar el entorno
+                self._last_obs = env.reset()
+
+                # Loggear estadísticas si es necesario
+                if log_interval is not None and self._episode_num % log_interval == 0:
+                    self._dump_logs()
+
+            # Si el episodio no termina, actualizar observación actual
+            else:
+                self._last_obs = new_obs
+
+        callback.on_rollout_end()
+
+        return RolloutReturn(num_collected_steps, num_collected_episodes, continue_training)
+
+    
+    def _sample_action(self, obs: np.ndarray) -> int:
+        """
+        Sample an action using an epsilon-greedy policy with function approximation.
+
+        :param obs: Current observation (state).
+        :return: Action to take in the environment.
+        """
+        if np.random.rand() < self.epsilon:  # Exploración
+            return self.env.action_space.sample()
+        else:  # Explotación
+            q_values = self.approximator.predict(obs)  # Obtener valores Q estimados
+            return np.argmax(q_values)  # Elegir la mejor acción
+
         
         
         
