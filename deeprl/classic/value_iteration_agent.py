@@ -2,10 +2,10 @@ import json
 import numpy as np
 import pickle
 
-from deeprl.agents import Agent
+from deeprl.classic import ClassicAgent
 from deeprl.policies import DeterministicPolicy
 
-class ValueIterationAgent(Agent):
+class ValueIterationAgent(ClassicAgent):
     """
     Agent that uses Value Iteration to learn the optimal policy.
     

@@ -132,7 +132,7 @@ class DummyVecEnv(VecEnv):
         """Check if worker environments are wrapped with a given wrapper"""
         target_envs = self._get_target_envs(indices)
         # Import here to avoid a circular import
-        from stable_baselines3.common import env_util
+        from deeprl.common import env_util
 
         return [env_util.is_wrapped(env_i, wrapper_class) for env_i in target_envs]
 

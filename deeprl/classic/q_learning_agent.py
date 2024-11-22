@@ -1,13 +1,13 @@
 import torch
 import json
-from deeprl.agents.base_agent import Agent
+from deeprl.classic.classic_agent import ClassicAgent
 from deeprl.policies.epsilon_greedy_policy import EpsilonGreedyPolicy
 from deeprl.environments import GymnasiumEnvWrapper
 from deeprl.visualization import ProgressBoard
 from deeprl.reward_shaping.default_reward import DefaultReward
 from deeprl.utils import print_progress
 
-class QLearningAgent(Agent):
+class QLearningAgent(ClassicAgent):
     """
     Q-learning agent using an epsilon-greedy policy with PyTorch tensors.
     

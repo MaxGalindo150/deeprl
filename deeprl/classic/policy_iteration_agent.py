@@ -2,10 +2,10 @@ import json
 import numpy as np
 import pickle
 
-from deeprl.agents.base_agent import Agent
+from deeprl.classic.classic_agent import ClassicAgent
 from deeprl.policies import DeterministicPolicy
 
-class PolicyIterationAgent(Agent):
+class PolicyIterationAgent(ClassicAgent):
     """
     Agent that implements the Policy Iteration algorithm.
     

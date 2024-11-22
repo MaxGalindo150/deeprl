@@ -1,5 +1,5 @@
 from deeprl.environments import GymnasiumEnvWrapper
-from deeprl.agents import ValueIterationAgent
+from deeprl.classic import ValueIterationAgent
 from deeprl.common.evaluate_policy import evaluate_policy
 
 def main():

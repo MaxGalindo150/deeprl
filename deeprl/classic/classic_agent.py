@@ -4,7 +4,7 @@ from pathlib import Path
 import torch
 
 
-class Agent(ABC):
+class ClassicAgent(ABC):
     """
     Base class for all reinforcement learning agents.
 

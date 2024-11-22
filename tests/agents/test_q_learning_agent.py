@@ -1,7 +1,7 @@
 import pytest
 import torch
 import os
-from deeprl.agents.q_learning_agent import QLearningAgent
+from deeprl.classic.q_learning_agent import QLearningAgent
 from deeprl.policies.epsilon_greedy_policy import EpsilonGreedyPolicy
 from deeprl.environments import GymnasiumEnvWrapper
 

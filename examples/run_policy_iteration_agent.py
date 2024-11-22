@@ -1,4 +1,4 @@
-from deeprl.agents import PolicyIterationAgent
+from deeprl.classic import PolicyIterationAgent
 from deeprl.environments import GymnasiumEnvWrapper
 from deeprl.common.evaluate_policy import evaluate_policy
 
