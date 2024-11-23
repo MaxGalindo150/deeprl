@@ -198,7 +198,7 @@ def configure_logger(
     save_path, format_strings = None, ["stdout"]
 
     if tensorboard_log is not None and SummaryWriter is None:
-        raise ImportError("Trying to log data to tensorboard but tensorboard is not installed.")
+        raise ImportError("Trying to log data to tensorboard but tensorboard is not installed. Install tensorboard with: pip install tensorboard")
 
     if tensorboard_log is not None and SummaryWriter is not None:
         latest_run_id = get_latest_run_id(tensorboard_log, tb_log_name)
