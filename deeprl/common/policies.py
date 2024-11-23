@@ -415,3 +415,117 @@ class BasePolicy(BaseModel, ABC):
         low, high = self.action_space.low, self.action_space.high
         return low + (0.5 * (scaled_action + 1.0) * (high - low))
     
+class TabularModel(ABC):
+    """
+    The base class for tabular policies.
+    
+    :param observation_space: The observation space of the environment
+    :param action_space: The action space of the environment
+    :param discount_factor: The discount factor for future rewards
+    """
+    
+    def __init__(
+        self,
+        observation_space: spaces.Space,
+        action_space: spaces.Space,
+        discount_factor: float,
+    ) -> None:
+        self.observation_space = observation_space
+        self.action_space = action_space
+        self.discount_factor = discount_factor
+        
+    def _get_constructor_parameters(self) -> Dict[str, Any]:
+        """
+        Get data that need to be saved in order to re-create the model when loading it from disk.
+
+        :return: The dictionary to pass to the as kwargs constructor when reconstruction this model.
+        """
+        return dict(
+            observation_space=self.observation_space,
+            action_space=self.action_space,
+            discount_factor=self.discount_factor,
+        )
+    
+    @property
+    def device(self) -> th.device:
+        """Infer which device this policy lives on by inspecting its parameters.
+        If it has no parameters, the 'cpu' device is used as a fallback.
+
+        :return:"""
+        for param in self.parameters():
+            return param.device
+        return get_device("cpu")
+    
+    def save(self, path: str) -> None:
+        """Save model to a given location."""
+        
+        th.save({"table": self.table, "data": self._get_constructor_parameters()}, path)
+    
+    @classmethod
+    def load(cls: Type[SelfBaseModel], path: str, device: Union[th.device, str] = "auto") -> SelfBaseModel:
+        """
+        Load model from path.
+
+        :param path:
+        :param device: Device on which the policy should be loaded.
+        :return:
+        """
+        device = get_device(device)
+        # Note(antonin): we cannot use `weights_only=True` here because we need to allow
+        # gymnasium imports for the policy to be loaded successfully
+        saved_variables = th.load(path, map_location=device, weights_only=False)
+
+        # Create policy object
+        model = cls(**saved_variables["data"])
+        # Load weights
+        model.load_state_dict(saved_variables["table"])
+        model.to(device)
+        return model
+        
+        
+class BaseTabularPolicy(TabularModel, ABC):
+    """
+    The base tabular policy object.
+    
+    Parameters are mostly the same as `TabularModel`; additions are documented below.
+    
+    :param args: positional arguments passed through to `TabularModel`.
+    :param kwargs: keyword arguments passed through to `TabularModel`.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    @staticmethod
+    def _dummy_schedule(progess_remaining: float) -> float:
+        """
+        (float) Useful for pickling the policy.
+        """
+        del progress_remaining
+        return 0.0
+    
+    @abstractmethod
+    def _predict(self, observation: PyTorchObs, deterministic: bool = False) -> th.Tensor:
+        """
+        Get the action according to the policy for a given observation.
+
+        By default provides a dummy implementation -- not all BasePolicy classes
+        implement this, e.g. if they are a Critic in an Actor-Critic method.
+
+        :param observation:
+        :param deterministic: Whether to use stochastic or deterministic actions
+        :return: Taken action according to the policy
+        """    
+    
+    # def predict(
+    #     self,
+    #     observation: Union[np.ndarray],
+        
+        
+    # )
+        
+        
+    
+    
+
+    
