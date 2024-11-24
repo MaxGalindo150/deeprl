@@ -428,11 +428,9 @@ class TabularModel(ABC):
         self,
         observation_space: spaces.Space,
         action_space: spaces.Space,
-        discount_factor: float,
     ) -> None:
         self.observation_space = observation_space
         self.action_space = action_space
-        self.discount_factor = discount_factor
         
     def _get_constructor_parameters(self) -> Dict[str, Any]:
         """
@@ -443,7 +441,6 @@ class TabularModel(ABC):
         return dict(
             observation_space=self.observation_space,
             action_space=self.action_space,
-            discount_factor=self.discount_factor,
         )
     
     @property
@@ -455,6 +452,49 @@ class TabularModel(ABC):
         for param in self.parameters():
             return param.device
         return get_device("cpu")
+    
+    def obs_to_tensor(self, observation: Union[np.ndarray, Dict[str, np.ndarray]]) -> Tuple[PyTorchObs, bool]:
+        """
+        Convert an input observation to a PyTorch tensor that can be fed to a model.
+        Includes sugar-coating to handle different observations (e.g. normalizing images).
+
+        :param observation: the input observation
+        :return: The observation as PyTorch tensor
+            and whether the observation is vectorized or not
+        """
+        vectorized_env = False
+        if isinstance(observation, dict):
+            assert isinstance(
+                self.observation_space, spaces.Dict
+            ), f"The observation provided is a dict but the obs space is {self.observation_space}"
+            # need to copy the dict as the dict in VecFrameStack will become a torch tensor
+            observation = copy.deepcopy(observation)
+            for key, obs in observation.items():
+                obs_space = self.observation_space.spaces[key]
+                if is_image_space(obs_space):
+                    obs_ = maybe_transpose(obs, obs_space)
+                else:
+                    obs_ = np.array(obs)
+                vectorized_env = vectorized_env or is_vectorized_observation(obs_, obs_space)
+                # Add batch dimension if needed
+                observation[key] = obs_.reshape((-1, *self.observation_space[key].shape))  # type: ignore[misc]
+
+        elif is_image_space(self.observation_space):
+            # Handle the different cases for images
+            # as PyTorch use channel first format
+            observation = maybe_transpose(observation, self.observation_space)
+
+        else:
+            observation = np.array(observation)
+
+        if not isinstance(observation, dict):
+            # Dict obs need to be handled separately
+            vectorized_env = is_vectorized_observation(observation, self.observation_space)
+            # Add batch dimension if needed
+            observation = observation.reshape((-1, *self.observation_space.shape))  # type: ignore[misc]
+
+        obs_tensor = obs_as_tensor(observation, self.device)
+        return obs_tensor, vectorized_env
     
     def save(self, path: str) -> None:
         """Save model to a given location."""
@@ -517,15 +557,52 @@ class BaseTabularPolicy(TabularModel, ABC):
         :return: Taken action according to the policy
         """    
     
-    # def predict(
-    #     self,
-    #     observation: Union[np.ndarray],
-        
-        
-    # )
-        
-        
-    
-    
+    def predict(
+        self,
+        observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        state: Optional[Tuple[np.ndarray, ...]] = None,
+        episode_start: Optional[np.ndarray] = None,
+        deterministic: bool = False,
+    ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
+        """
+        Get the policy action from an observation (and optional hidden state).
+        Includes sugar-coating to handle different observations (e.g. normalizing images).
 
-    
+        :param observation: the input observation
+        :param state: The last hidden states (can be None, used in recurrent policies)
+        :param episode_start: The last masks (can be None, used in recurrent policies)
+            this correspond to beginning of episodes,
+            where the hidden states of the RNN must be reset.
+        :param deterministic: Whether or not to return deterministic actions.
+        :return: the model's action and the next hidden state
+            (used in recurrent policies)
+        """
+        
+        # Check for common mistake that the user does not mix Gym/VecEnv API
+        # Tuple obs are not supported by SB3, so we can safely do that check
+        if isinstance(observation, tuple) and len(observation) == 2 and isinstance(observation[1], dict):
+            raise ValueError(
+                "You have passed a tuple to the predict() function instead of a Numpy array or a Dict. "
+                "You are probably mixing Gym API with DeepRLearn VecEnv API: `obs, info = env.reset()` (Gym) "
+                "vs `obs = vec_env.reset()` (DeepRLearn VecEnv). "
+                "See related issue https://github.com/DLR-RM/stable-baselines3/issues/1694 "
+                "and documentation for more information: https://stable-baselines3.readthedocs.io/en/master/guide/vec_envs.html#vecenv-api-vs-gym-api"
+            )
+
+        obs_tensor, vectorized_env = self.obs_to_tensor(observation)
+
+        with th.no_grad():
+            actions = self._predict(obs_tensor, deterministic=deterministic)
+        # Convert to numpy, and reshape to the original action shape
+        actions = actions.cpu().numpy().reshape((-1, *self.action_space.shape))  # type: ignore[misc, assignment]
+
+        if isinstance(self.action_space, spaces.Box):
+            raise ValueError("Continuous action spaces are not supported by tabular policies.")
+
+
+        # Remove batch dimension if needed
+        if not vectorized_env:
+            assert isinstance(actions, np.ndarray)
+            actions = actions.squeeze(axis=0)
+
+        return actions, state  # type: ignore[return-value]

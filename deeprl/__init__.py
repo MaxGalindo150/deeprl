@@ -4,6 +4,7 @@ import os
 from deeprl.common.utils import get_system_info
 #from deeprl.ddpg import DDPG
 from deeprl.deep.dqn import DQN
+from deeprl.classic.q_learning.q_learning import QLearning
 from deeprl.her.her_replay_buffer import HerReplayBuffer
 #from deeprl.ppo import PPO
 #from deeprl.sac import SAC
@@ -30,6 +31,7 @@ __all__ = [
     "PPO",
     "SAC",
     "TD3",
+    "QLearning",
     "HerReplayBuffer",
     "get_system_info",
 ]

@@ -7,10 +7,8 @@ env = gym.make("FrozenLake-v1", is_slippery=False)
 agent = QLearning(
     policy="TabularPolicy",
     env=env,
+    learning_rate=0.1,
     gamma=0.99,
-    exploration_fraction=0.2,
-    exploration_initial_eps=1.0,
-    exploration_final_eps=0.05,
     verbose=2,
 )
 
