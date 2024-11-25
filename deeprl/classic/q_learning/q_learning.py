@@ -9,7 +9,7 @@ from typing import TypeVar, Union, Type, Dict, Any, Optional, Tuple, ClassVar, I
 from deeprl.common.classic_agent import ClassicAgent
 from deeprl.common.type_aliases import GymEnv, Schedule, MaybeCallback
 from deeprl.classic.q_learning.policies import QTable
-from deeprl.common.save_util import save_to_zip_file
+from deeprl.common.save_util import save_to_zip_file, load_from_zip_file
 from deeprl.common.policies import BasePolicy, BaseTabularPolicy
 from deeprl.common.utils import get_linear_fn
 
@@ -258,16 +258,16 @@ class QLearning(ClassicAgent):
             _init_setup_model=False,  # Prevent model setup here
         )
 
-        # Restore attributes and Q-table
+        # Restore attributes from the loaded data
         model.__dict__.update(data)
         model.__dict__.update(kwargs)
 
-        # Setup the model, including the policy
+        # Setup the policy and other components
         model._setup_model()
 
         # Restore the Q-table directly into the policy (for tabular policies)
-        if hasattr(model, "q_table") and isinstance(model.q_table, np.ndarray):
-            model.policy.table = model.q_table
-
+        if "q_table" in data and hasattr(model.policy, "table"):
+            model.policy.table = data["q_table"]
+            model.q_table = data["q_table"]
+            
         return model
-
