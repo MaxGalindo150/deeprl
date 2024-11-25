@@ -418,111 +418,29 @@ class BasePolicy(BaseModel, ABC):
 class TabularModel(ABC):
     """
     The base class for tabular policies.
-    
+
     :param observation_space: The observation space of the environment
     :param action_space: The action space of the environment
-    :param discount_factor: The discount factor for future rewards
     """
-    
-    def __init__(
-        self,
-        observation_space: spaces.Space,
-        action_space: spaces.Space,
-    ) -> None:
+
+    def __init__(self, observation_space: spaces.Space, action_space: spaces.Space):
         self.observation_space = observation_space
         self.action_space = action_space
-        
-    def _get_constructor_parameters(self) -> Dict[str, Any]:
+
+        # Validate that spaces are discrete
+        assert isinstance(observation_space, spaces.Discrete), "TabularModel only supports discrete observation spaces."
+        assert isinstance(action_space, spaces.Discrete), "TabularModel only supports discrete action spaces."
+
+    @abstractmethod
+    def predict(self, state: int, deterministic: bool = False) -> int:
         """
-        Get data that need to be saved in order to re-create the model when loading it from disk.
-
-        :return: The dictionary to pass to the as kwargs constructor when reconstruction this model.
+        Predict the next action given a state.
+        :param state: Current state as an integer index.
+        :param deterministic: Whether to select the action deterministically.
+        :return: Selected action as an integer.
         """
-        return dict(
-            observation_space=self.observation_space,
-            action_space=self.action_space,
-        )
-    
-    @property
-    def device(self) -> th.device:
-        """Infer which device this policy lives on by inspecting its parameters.
-        If it has no parameters, the 'cpu' device is used as a fallback.
+        pass
 
-        :return:"""
-        for param in self.parameters():
-            return param.device
-        return get_device("cpu")
-    
-    def obs_to_tensor(self, observation: Union[np.ndarray, Dict[str, np.ndarray]]) -> Tuple[PyTorchObs, bool]:
-        """
-        Convert an input observation to a PyTorch tensor that can be fed to a model.
-        Includes sugar-coating to handle different observations (e.g. normalizing images).
-
-        :param observation: the input observation
-        :return: The observation as PyTorch tensor
-            and whether the observation is vectorized or not
-        """
-        vectorized_env = False
-        if isinstance(observation, dict):
-            assert isinstance(
-                self.observation_space, spaces.Dict
-            ), f"The observation provided is a dict but the obs space is {self.observation_space}"
-            # need to copy the dict as the dict in VecFrameStack will become a torch tensor
-            observation = copy.deepcopy(observation)
-            for key, obs in observation.items():
-                obs_space = self.observation_space.spaces[key]
-                if is_image_space(obs_space):
-                    obs_ = maybe_transpose(obs, obs_space)
-                else:
-                    obs_ = np.array(obs)
-                vectorized_env = vectorized_env or is_vectorized_observation(obs_, obs_space)
-                # Add batch dimension if needed
-                observation[key] = obs_.reshape((-1, *self.observation_space[key].shape))  # type: ignore[misc]
-
-        elif is_image_space(self.observation_space):
-            # Handle the different cases for images
-            # as PyTorch use channel first format
-            observation = maybe_transpose(observation, self.observation_space)
-
-        else:
-            observation = np.array(observation)
-
-        if not isinstance(observation, dict):
-            # Dict obs need to be handled separately
-            vectorized_env = is_vectorized_observation(observation, self.observation_space)
-            # Add batch dimension if needed
-            observation = observation.reshape((-1, *self.observation_space.shape))  # type: ignore[misc]
-
-        obs_tensor = obs_as_tensor(observation, self.device)
-        return obs_tensor, vectorized_env
-    
-    def save(self, path: str) -> None:
-        """Save model to a given location."""
-        
-        th.save({"table": self.table, "data": self._get_constructor_parameters()}, path)
-    
-    @classmethod
-    def load(cls: Type[SelfBaseModel], path: str, device: Union[th.device, str] = "auto") -> SelfBaseModel:
-        """
-        Load model from path.
-
-        :param path:
-        :param device: Device on which the policy should be loaded.
-        :return:
-        """
-        device = get_device(device)
-        # Note(antonin): we cannot use `weights_only=True` here because we need to allow
-        # gymnasium imports for the policy to be loaded successfully
-        saved_variables = th.load(path, map_location=device, weights_only=False)
-
-        # Create policy object
-        model = cls(**saved_variables["data"])
-        # Load weights
-        model.load_state_dict(saved_variables["table"])
-        model.to(device)
-        return model
-        
-        
 class BaseTabularPolicy(TabularModel, ABC):
     """
     The base tabular policy object.

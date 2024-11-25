@@ -1,12 +1,15 @@
+import io
 import numpy as np
 import torch as th
+import pathlib
+
 from gymnasium import spaces
 
-from typing import TypeVar, Union, Type, Dict, Any, Optional, Tuple, ClassVar
-
+from typing import TypeVar, Union, Type, Dict, Any, Optional, Tuple, ClassVar, Iterable
 from deeprl.common.classic_agent import ClassicAgent
 from deeprl.common.type_aliases import GymEnv, Schedule, MaybeCallback
 from deeprl.classic.q_learning.policies import QTable
+from deeprl.common.save_util import save_to_zip_file
 from deeprl.common.policies import BasePolicy, BaseTabularPolicy
 from deeprl.common.utils import get_linear_fn
 
@@ -44,7 +47,7 @@ class QLearning(ClassicAgent):
     exploration_schedule: Schedule
     policy: QTable
     
-    def __inti__(
+    def __init__(
         self,
         policy: Union[str, Type[BasePolicy], Type[BaseTabularPolicy]],
         env: Union[GymEnv, str],
@@ -79,18 +82,22 @@ class QLearning(ClassicAgent):
         self.exploration_final_eps = exploration_final_eps
         self.exploration_fraction = exploration_fraction
         self.exploration_rate = 0.0
+        self.gamma = gamma
         
         if _init_setup_model:
             self._setup_model()
         
     def _setup_model(self) -> None:
         super()._setup_model()
-        #self._create_aliases()
+        self._create_aliases()
         self.exploration_schedule = get_linear_fn(
             self.exploration_initial_eps,
             self.exploration_final_eps,
             self.exploration_fraction
         )
+    
+    def _create_aliases(self) -> None:
+        self.q_table = self.policy.table
     
     def _on_step(self) -> None:
         self.exploration_rate = self.exploration_schedule(self._current_progress_remaining)
@@ -100,6 +107,10 @@ class QLearning(ClassicAgent):
         """
         Actualiza la tabla Q usando la fórmula de Q-learning.
         """
+        state = state.item() if isinstance(state, np.ndarray) else state
+
+
+
         q_value = self.q_table[state][action]
         max_next_q = np.max(self.q_table[next_state]) if not done else 0
         new_q = q_value + self.learning_rate * (reward + self.gamma * max_next_q - q_value)
@@ -133,8 +144,8 @@ class QLearning(ClassicAgent):
             else:
                 action = np.array(self.action_space.sample())
         else:
-            action, state = self.policy.predict(observation, state, episode_start, deterministic)
-        return action, state
+            action = self.policy.predict(observation,deterministic)
+        return action
     
     def learn(
         self: SelfQLearning,
@@ -153,4 +164,110 @@ class QLearning(ClassicAgent):
             reset_num_timesteps=reset_num_timesteps,
             progress_bar=progress_bar,
         )
+        
+    def save(
+        self,
+        path: Union[str, pathlib.Path],
+        exclude: Optional[Iterable[str]] = None,
+        include: Optional[Iterable[str]] = None,
+    ) -> None:
+        """
+        Save the attributes of the QLearning agent and the Q-table in a zip file.
+
+        :param path: Path to the file where the QLearning agent should be saved.
+        :param exclude: Parameters to exclude from saving (if any).
+        :param include: Parameters to explicitly include even if excluded by default.
+        """
+        # Copy the agent's attributes
+        data = self.__dict__.copy()
+
+        # Handle exclusions
+        if exclude is None:
+            exclude = []
+        exclude = set(exclude).union(self._excluded_save_params())
+
+        if include is not None:
+            exclude = exclude.difference(include)
+
+        # Remove excluded parameters
+        for param_name in exclude:
+            data.pop(param_name, None)
+
+        # Ensure the Q-table is included
+        data['q_table'] = self.q_table
+
+        # Save using the helper function
+        save_to_zip_file(path, data=data, params=None, pytorch_variables=None)
     
+    
+    @classmethod
+    def load(
+        cls: Type[SelfQLearning],
+        path: Union[str, pathlib.Path, io.BufferedIOBase],
+        env: Optional[GymEnv] = None,
+        custom_objects: Optional[Dict[str, Any]] = None,
+        print_system_info: bool = False,
+        force_reset: bool = True,
+        **kwargs,
+    ) -> "QLearning":
+        """
+        Load a QLearning agent and its Q-table from a saved file.
+
+        :param path: Path to the file where the QLearning agent is saved.
+        :param env: Optionally, provide a new environment for the agent.
+        :param custom_objects: Optional dictionary to replace attributes during loading.
+        :param print_system_info: Whether to print system information during loading.
+        :param force_reset: Whether to reset the environment upon loading.
+        :param kwargs: Additional arguments to override saved attributes.
+        :return: Loaded QLearning agent.
+        """
+        from deeprl.common.save_util import load_from_zip_file
+
+        # Load data and parameters from the zip file
+        data, _, _ = load_from_zip_file(
+            path,
+            custom_objects=custom_objects,
+            print_system_info=print_system_info,
+        )
+
+        assert data is not None, "No data found in the saved file"
+        assert "q_table" in data, "Q-table missing from the saved file"
+
+        # If the environment is provided, ensure compatibility
+        if env is not None:
+            from deeprl.common.utils import check_for_correct_spaces
+            check_for_correct_spaces(env, data["observation_space"], data["action_space"])
+            data["env"] = env
+            if force_reset:
+                env.reset()
+
+        # Initialize the model without setting up the environment
+        model = cls(
+            policy=data.get("policy_class"),
+            env=env,
+            learning_rate=data.get("learning_rate"),
+            gamma=data.get("gamma"),
+            exploration_fraction=data.get("exploration_fraction"),
+            exploration_initial_eps=data.get("exploration_initial_eps"),
+            exploration_final_eps=data.get("exploration_final_eps"),
+            policy_kwargs=data.get("policy_kwargs"),
+            stats_window_size=data.get("stats_window_size"),
+            tensorboard_log=data.get("tensorboard_log"),
+            verbose=data.get("verbose"),
+            seed=data.get("seed"),
+            _init_setup_model=False,  # Prevent model setup here
+        )
+
+        # Restore attributes and Q-table
+        model.__dict__.update(data)
+        model.__dict__.update(kwargs)
+
+        # Setup the model, including the policy
+        model._setup_model()
+
+        # Restore the Q-table directly into the policy (for tabular policies)
+        if hasattr(model, "q_table") and isinstance(model.q_table, np.ndarray):
+            model.policy.table = model.q_table
+
+        return model
+

@@ -2,9 +2,9 @@ import numpy as np
 from typing import Any, Dict, Optional, Tuple, Union
 from gymnasium import spaces
 
-from deeprl.common.policies import BaseTabularPolicy
+from deeprl.common.policies import TabularModel
 
-class QTable(BaseTabularPolicy):
+class QTable(TabularModel):
     """
     A Q-Table implementation for tabular reinforcement learning.
 
@@ -23,32 +23,26 @@ class QTable(BaseTabularPolicy):
         gamma: float = 0.99,
         epsilon: float = 1.0,
     ):
-        super().__init__(observation_space=observation_space, action_space=action_space)
-        
-        # Validate that spaces are discrete
-        assert isinstance(observation_space, spaces.Discrete), "QTable only supports discrete observation spaces."
-        assert isinstance(action_space, spaces.Discrete), "QTable only supports discrete action spaces."
-        
+        super().__init__(observation_space, action_space)
+
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.epsilon = epsilon
-        
+
         # Initialize Q-table with zeros
-        self.q_table = np.zeros((observation_space.n, action_space.n))
+        self.table = np.zeros((observation_space.n, action_space.n))
 
-    def _predict(self, observation: np.ndarray, deterministic: bool = False) -> np.ndarray:
+    def predict(self, state: int, deterministic: bool = False) -> int:
         """
-        Predict the best action using the Q-Table.
+        Predict the next action using the Q-Table.
 
-        :param observation: Current state (discrete index).
-        :param deterministic: If True, select the action with the highest Q-value.
-        :return: Selected action.
+        :param state: Current state as an integer index.
+        :param deterministic: Whether to select the action deterministically.
+        :return: Selected action as an integer.
         """
         if deterministic or np.random.rand() >= self.epsilon:
-            # Exploitation: Select the action with the highest Q-value
-            return np.argmax(self.q_table[observation])
+            return np.argmax(self.table[state])
         else:
-            # Exploration: Random action
             return self.action_space.sample()
 
     def update(self, state: int, action: int, reward: float, next_state: int, done: bool) -> None:
@@ -63,21 +57,12 @@ class QTable(BaseTabularPolicy):
         """
         target = reward
         if not done:
-            target += self.gamma * np.max(self.q_table[next_state])
-        
-        # Q-Learning update rule
-        self.q_table[state, action] += self.learning_rate * (target - self.q_table[state, action])
+            target += self.gamma * np.max(self.table[next_state])
 
-    def set_epsilon(self, epsilon: float) -> None:
-        """
-        Set the exploration rate.
-
-        :param epsilon: New epsilon value.
-        """
-        self.epsilon = epsilon
+        self.table[state, action] += self.learning_rate * (target - self.table[state, action])
 
     def reset(self) -> None:
         """
         Reset the Q-table to all zeros.
         """
-        self.q_table.fill(0)
+        self.table.fill(0)

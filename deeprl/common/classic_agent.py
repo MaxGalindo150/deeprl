@@ -5,6 +5,7 @@ import time
 from typing import TypeVar, Union, Type, Dict, Any, Optional, Tuple
 
 import torch as th
+from torch import nn
 import numpy as np
 from gymnasium import spaces
 from deeprl.common.save_util import load_from_zip_file, recursive_getattr, recursive_setattr, save_to_zip_file
@@ -65,7 +66,7 @@ class ClassicAgent(BaseAgent):
             stats_window_size=stats_window_size,
             tensorboard_log=tensorboard_log,
             verbose=verbose,
-            device=device,
+            device="auto",
             support_multi_env=False,
             monitor_wrapper=True,
             seed=seed,
@@ -84,7 +85,10 @@ class ClassicAgent(BaseAgent):
             self.lr_schedule,
             **self.policy_kwargs
         )
-        self.policy = self.policy.to(self.device)        
+        
+        if isinstance(self.policy, nn.Module):
+            self.policy = self.policy.to(self.device)
+            
         
     def _setup_learn(
         self,
@@ -136,7 +140,7 @@ class ClassicAgent(BaseAgent):
             done = False
 
             while not done:
-                action, _ = self.predict(current_state, self.table, self.num_timesteps)
+                action = self.predict(current_state, self.policy.table, self.num_timesteps)
 
                 next_state, reward, done, info = self.env.step(action)
 
@@ -144,18 +148,26 @@ class ClassicAgent(BaseAgent):
 
                 current_state = next_state
                 self.num_timesteps += 1
+                self._update_info_buffer(info, done)
+                # self._update_current_progress_remaining(self.num_timesteps, self._total_timesteps)
 
                 if callback:
                     callback.on_step()
 
                 if log_interval and self.num_timesteps % log_interval == 0:
-                    self._log_progress()
+                    self._dump_logs()
 
                 if self.num_timesteps >= total_timesteps:
                     done = True
+                if done:
+                    self._episode_num += 1
+                    
+  
+                    
+            
 
-            if callback:
-                callback.on_episode_end()
+            # if callback:
+            #     callback.on_episode_end()
 
         callback.on_training_end()
 
@@ -167,30 +179,7 @@ class ClassicAgent(BaseAgent):
         """
         raise NotImplementedError("The train method must be implemented by subclasses.")
 
-    def _dump_logs(self) -> None:
-        """
-        Write log.
-        """
-        assert self.ep_info_buffer is not None
-        assert self.ep_success_buffer is not None
 
-        time_elapsed = max((time.time_ns() - self.start_time) / 1e9, sys.float_info.epsilon)
-        fps = int((self.num_timesteps - self._num_timesteps_at_start) / time_elapsed)
-        self.logger.record("time/episodes", self._episode_num, exclude="tensorboard")
-        if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
-            self.logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
-            self.logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
-        self.logger.record("time/fps", fps)
-        self.logger.record("time/time_elapsed", int(time_elapsed), exclude="tensorboard")
-        self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
-        if self.use_sde:
-            self.logger.record("train/std", (self.actor.get_std()).mean().item())
-
-        if len(self.ep_success_buffer) > 0:
-            self.logger.record("rollout/success_rate", safe_mean(self.ep_success_buffer))
-        # Pass the number of timesteps for tensorboard
-        self.logger.dump(step=self.num_timesteps)
-    
     def _on_step(self) -> None:
         """
         Method called after each step in the environment.
@@ -255,3 +244,28 @@ class ClassicAgent(BaseAgent):
             model.policy.table = params["table"]
 
         return model
+
+    def _dump_logs(self) -> None:
+        """
+        Write log.
+        """
+        assert self.ep_info_buffer is not None
+        assert self.ep_success_buffer is not None
+
+        time_elapsed = max((time.time_ns() - self.start_time) / 1e9, sys.float_info.epsilon)
+        fps = int((self.num_timesteps - self._num_timesteps_at_start) / time_elapsed)
+        self.logger.record("time/episodes", self._episode_num, exclude="tensorboard")
+        if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
+            self.logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
+            self.logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
+        self.logger.record("time/fps", fps)
+        self.logger.record("time/time_elapsed", int(time_elapsed), exclude="tensorboard")
+        self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
+        if self.use_sde:
+            self.logger.record("train/std", (self.actor.get_std()).mean().item())
+
+        if len(self.ep_success_buffer) > 0:
+            self.logger.record("rollout/success_rate", safe_mean(self.ep_success_buffer))
+        # Pass the number of timesteps for tensorboard
+        self.logger.dump(step=self.num_timesteps)
+        
