@@ -20,7 +20,7 @@ In the `docs/` folder:
 make html
 ```
 
-If you want to building each time you make a change, you can use the following command:
+If you want to build each time you make a change, you can use the following command:
 
 ```bash
 sphinx-autobuild . _build/html
