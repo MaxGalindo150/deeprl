@@ -8,8 +8,7 @@ model = QLearning(
     env=env,
     learning_rate=0.1,
     gamma=0.99,
-    verbose=2,
-    tensorboard_log="./q_learning_frozenlake_tensorboard/",
+    verbose=2
 )
 
 model.learn(total_timesteps=1_000_000, log_interval=4)

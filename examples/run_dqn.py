@@ -6,8 +6,7 @@ env = gym.make("CartPole-v1")
 
 model = DQN(
     policy="MlpPolicy", 
-    env=env, 
-    tensorboard_log="./dqn_cartpole_tensorboard/", 
+    env=env,  
     verbose=1)
 
 model.learn(total_timesteps=1_000_000, log_interval=4)
