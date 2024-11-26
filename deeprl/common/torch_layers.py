@@ -80,11 +80,9 @@ class NatureCNN(BaseFeaturesExtractor):
             f"only with images not with {observation_space}\n"
             "(you are probably using `CnnPolicy` instead of `MlpPolicy` or `MultiInputPolicy`)\n"
             "If you are using a custom environment,\n"
-            "please check it using our env checker:\n"
-            "https://stable-baselines3.readthedocs.io/en/master/common/env_checker.html.\n"
+            "please check it using our env checker.\n"
             "If you are using `VecNormalize` or already normalized channel-first images "
-            "you should pass `normalize_images=False`: \n"
-            "https://stable-baselines3.readthedocs.io/en/master/guide/custom_env.html"
+            "you should pass `normalize_images=False`."
         )
         n_input_channels = observation_space.shape[0]
         self.cnn = nn.Sequential(

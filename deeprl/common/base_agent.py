@@ -755,13 +755,13 @@ class BaseAgent(ABC):
             # put state_dicts back in place
             model.set_parameters(params, exact_match=True, device=device)
         except RuntimeError as e:
-            # Patch to load policies saved using SB3 < 1.7.0
+            # Patch to load policies saved using DRL < 0.1.0
             # the error is probably due to old policy being loaded
             # See https://github.com/DLR-RM/stable-baselines3/issues/1233
             if "pi_features_extractor" in str(e) and "Missing key(s) in state_dict" in str(e):
                 model.set_parameters(params, exact_match=False, device=device)
                 warnings.warn(
-                    "You are probably loading a A2C/PPO model saved with SB3 < 1.7.0, "
+                    "You are probably loading a A2C/PPO model saved with DRL < 0.1.0, "
                     "we deactivated exact_match so you can save the model "
                     "again to avoid issues in the future "
                     "(see https://github.com/DLR-RM/stable-baselines3/issues/1233 for more info). "
@@ -771,7 +771,7 @@ class BaseAgent(ABC):
             else:
                 raise e
         except ValueError as e:
-            # Patch to load DQN policies saved using SB3 < 2.4.0
+            # Patch to load DQN policies saved using DRL < 0.1.0
             # The target network params are no longer in the optimizer
             # See https://github.com/DLR-RM/stable-baselines3/pull/1963
             saved_optim_params = params["policy.optimizer"]["param_groups"][0]["params"]  # type: ignore[index]
@@ -783,7 +783,7 @@ class BaseAgent(ABC):
 
                 model.set_parameters(params, exact_match=True, device=device)
                 warnings.warn(
-                    "You are probably loading a DQN model saved with SB3 < 2.4.0, "
+                    "You are probably loading a DQN model saved with DRL < 0.1.0, "
                     "we truncated the optimizer state so you can save the model "
                     "again to avoid issues in the future "
                     "(see https://github.com/DLR-RM/stable-baselines3/pull/1963 for more info). "

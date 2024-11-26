@@ -45,7 +45,7 @@ def set_random_seed(seed: int, using_cuda: bool = False) -> None:
         th.backends.cudnn.benchmark = False
 
 
-# From stable baselines
+
 def explained_variance(y_pred: np.ndarray, y_true: np.ndarray) -> float:
     """
     Computes fraction of variance that ypred explains about y.
@@ -530,7 +530,7 @@ def get_system_info(print_info: bool = True) -> Tuple[Dict[str, str], str]:
         # wrongly linking to another issue on GitHub. Example: turn "#42" to "# 42".
         "OS": re.sub(r"#(\d)", r"# \1", f"{platform.platform()} {platform.version()}"),
         "Python": platform.python_version(),
-        "Stable-Baselines3": deeprl.__version__,
+        "DeepRL": deeprl.__version__,
         "PyTorch": th.__version__,
         "GPU Enabled": str(th.cuda.is_available()),
         "Numpy": np.__version__,
