@@ -1,24 +1,24 @@
 import gymnasium as gym
-
+import imageio
 from deeprl import DQN
 
-env = gym.make("CartPole-v1")
+env = gym.make("CartPole-v1", render_mode="rgb_array")
 
-model = DQN(
-    policy="MlpPolicy", 
-    env=env,  
-    verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=1_000_000)
 
-model.learn(total_timesteps=1_000_000, log_interval=4)
-model.save("dqn_cartpole")
+model.save("cartpole_dqn")
 
-del model # remove to demonstrate saving and loading
+frames = []
 
-model = DQN.load("dqn_cartpole")
+vec_env = model.get_env()
+obs = vec_env.reset()
+for i in range(500):
+    frames.append(vec_env.render("rgb_array"))
+    action, _state = model.predict(obs, deterministic=True)
+    obs, reward, done, info = vec_env.step(action)
+    vec_env.render("human")
 
-obs, info = env.reset()
-while True:
-    action, _states = model.predict(obs, deterministic=True)
-    obs, reward, terminated, truncated, info = env.step(action)
-    if terminated or truncated:
-        obs, info = env.reset()
+env.close()
+
+imageio.mimsave("cartpole_dqn.gif", frames, fps=30)

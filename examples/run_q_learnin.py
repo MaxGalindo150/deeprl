@@ -15,13 +15,10 @@ model.learn(total_timesteps=1_000_000, log_interval=4)
 
 model.save("frozenlake_q_table")
 
-print(f"Q Table: {model.q_table}")
-
 del model # remove to demonstrate saving and loading
 
 model = QLearning.load("frozenlake_q_table")
 
-print(f"Q Table from saved model: {model.q_table}")
 
 env = gym.make("Taxi-v3", render_mode="human")
 

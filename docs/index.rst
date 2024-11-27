@@ -6,3 +6,65 @@ DeepRL Documentation
 
 Main Features
 -------------
+
+- Simple and easy-to-use interface for training and evaluating reinforcement learning agents.
+- Built on top of PyTorch.
+- PEP8 compliant.
+- Documented functions and classes
+- Tests, high test coverage
+- Clean code
+- Tensorboard support
+.. change the link to the benchmarks
+- The performance of each algorithm is tested (see `benchmarks <https://github.com>`)
+
+.. toctree::
+    :maxdepth: 2 
+    :caption: User Guide
+
+    guide/install
+    guide/quickstart
+    guide/rl_tips
+    guide/rl
+    guide/algorithms
+    guide/examples
+    guide/vec_envs
+    guide/custom_policy
+    guide/custom_env
+    guide/callbacks
+    guide/tensorboard
+    guide/integration
+    guide/deeprl_contributing
+    guide/deeprl_faq
+    guide/changelog
+..    guide/deeprl_zoo
+    guide/deeprl_changelog
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Classic RL Algorithms
+
+    modules/q_learning
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Deep RL Algorithms
+
+    modules/dqn
+
+.. toctree::
+  :maxdepth: 1
+  :caption: Common
+
+  common/atari_wrappers
+  common/env_util
+  common/envs
+  common/distributions
+  common/evaluation
+  common/env_checker
+  common/monitor
+  common/logger
+  common/noise
+  common/utils
+
+
+
