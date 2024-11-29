@@ -73,6 +73,29 @@ In the following example, we will train, save and load a DQN model on the Lunar 
   If you want to load parameters without re-creating the model, e.g. to evaluate the same model
   with multiple different sets of parameters, consider using ``set_parameters`` instead.
 
+
+Dict Observations
+-----------------
+
+You can use environments with dictionary observation spaces. This is useful in the case where one can't directly
+concatenate observations such as an image from a camera combined with a vector of servo sensor data (e.g., rotation angles).
+DeepRL provides ``SimpleMultiObsEnv`` as an example of this kind of setting.
+The environment is a simple grid world, but the observations for each cell come in the form of dictionaries.
+These dictionaries are randomly initialized on the creation of the environment and contain a vector observation and an image observation.
+
+.. code-block:: python
+
+  from deeprl import PPO
+  from deeprl.common.envs import SimpleMultiObsEnv
+
+
+  # Stable Baselines provides SimpleMultiObsEnv as an example environment with Dict observations
+  env = SimpleMultiObsEnv(random_start=False)
+
+  model = PPO("MultiInputPolicy", env, verbose=1)
+  model.learn(total_timesteps=100_000)
+
+
 Multiprocessing: Unleashing the Power of Vectorized Environments
 ----------------------------------------------------------------
 
@@ -170,3 +193,90 @@ If your callback returns ``False``, training is aborted early.
 
   plot_results([log_dir], timesteps, results_plotter.X_TIMESTEPS, "TD3 LunarLander")
   plt.show()
+
+
+Callbacks: Evaluate Agent Performance
+-------------------------------------
+To periodically evaluate an agent's performance on a separate test environment, use ``EvalCallback``.
+You can control the evaluation frequency with ``eval_freq`` to monitor your agent's progress during training.
+
+.. code-block:: python
+
+  import os
+  import gymnasium as gym
+
+  from deeprl import SAC
+  from deeprl.common.callbacks import EvalCallback
+  from deeprl.common.env_util import make_vec_env
+
+  env_id = "Pendulum-v1"
+  n_training_envs = 1
+  n_eval_envs = 5
+
+  # Create log dir where evaluation results will be saved
+  eval_log_dir = "./eval_logs/"
+  os.makedirs(eval_log_dir, exist_ok=True)
+
+  # Initialize a vectorized training environment with default parameters
+  train_env = make_vec_env(env_id, n_envs=n_training_envs, seed=0)
+
+  # Separate evaluation env, with different parameters passed via env_kwargs
+  # Eval environments can be vectorized to speed up evaluation.
+  eval_env = make_vec_env(env_id, n_envs=n_eval_envs, seed=0,
+                          env_kwargs={'g':0.7})
+
+  # Create callback that evaluates agent for 5 episodes every 500 training environment steps.
+  # When using multiple training environments, agent will be evaluated every
+  # eval_freq calls to train_env.step(), thus it will be evaluated every
+  # (eval_freq * n_envs) training steps. See EvalCallback doc for more information.
+  eval_callback = EvalCallback(eval_env, best_model_save_path=eval_log_dir,
+                                log_path=eval_log_dir, eval_freq=max(500 // n_training_envs, 1),
+                                n_eval_episodes=5, deterministic=True,
+                                render=False)
+
+  model = SAC("MlpPolicy", train_env)
+  model.learn(5000, callback=eval_callback)
+
+
+Atari Games
+-----------
+
+.. .. figure:: ../_static/img/breakout.gif
+
+  Trained A2C agent on Breakout
+
+.. .. figure:: https://cdn-images-1.medium.com/max/960/1*UHYJE7lF8IDZS_U5SsAFUQ.gif
+
+ Pong Environment
+
+
+Training a RL agent on Atari games is straightforward thanks to ``make_atari_env`` helper function.
+It will do `all the preprocessing <https://danieltakeshi.github.io/2016/11/25/frame-skipping-and-preprocessing-for-deep-q-networks-on-atari-2600-games/>`_
+and multiprocessing for you. To install the Atari environments, run the command ``pip install gymnasium[atari,accept-rom-license]`` to install the Atari environments and ROMs, or install Stable Baselines3 with ``pip install deeprl[extra]`` to install this and other optional dependencies.
+
+.. .. image:: ../_static/img/colab-badge.svg
+..    :target: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/atari_games.ipynb
+..
+
+.. code-block:: python
+
+  from deeprl.common.env_util import make_atari_env
+  from deeprl.common.vec_env import VecFrameStack
+  from deeprl import A2C
+
+  # There already exists an environment generator
+  # that will make and wrap atari environments correctly.
+  # Here we are also multi-worker training (n_envs=4 => 4 environments)
+  vec_env = make_atari_env("PongNoFrameskip-v4", n_envs=4, seed=0)
+  # Frame-stacking with 4 frames
+  vec_env = VecFrameStack(vec_env, n_stack=4)
+
+  model = A2C("CnnPolicy", vec_env, verbose=1)
+  model.learn(total_timesteps=25_000)
+
+  obs = vec_env.reset()
+  while True:
+      action, _states = model.predict(obs, deterministic=False)
+      obs, rewards, dones, info = vec_env.step(action)
+      vec_env.render("human")
+
