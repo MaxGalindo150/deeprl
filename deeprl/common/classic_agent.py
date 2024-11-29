@@ -1,9 +1,5 @@
-import io
-import pathlib
 import sys
 import time
-import warnings
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -30,8 +26,8 @@ class ClassicAgent(BaseAgent):
         (if registered in Gym, can be str. Can be None for loading trained models)
     :param gamma: The discount factor
     :param policy_kwargs: Additional arguments to be passed to the policy on creation
-    :param stats_window_size: Window size for the rollout logging, specifying the number of episodes to average
-        the reported success rate, mean episode length, and mean reward over
+    :param stats_window_size: Window size for the rollout logging, specifying the number of episodes 
+        to average the reported success rate, mean episode length, and mean reward over
     :param tensorboard_log: The log location for tensorboard (if None, no logging)
     :param verbose: Verbosity level: 0 for no output, 1 for info messages, 2 for debug messages
     :param device: Device (cpu, cuda, ...) on which the code should be run.
@@ -113,6 +109,7 @@ class ClassicAgent(BaseAgent):
         reset_num_timesteps: bool = True,
         progress_bar: bool = False,
     ) -> SelfClassicAgent:
+        
         total_timesteps, callback = self._setup_learn(
             total_timesteps,
             callback,
@@ -125,8 +122,75 @@ class ClassicAgent(BaseAgent):
         
         assert self.env is not None, "You must set the environment before calling learn()"
         
-        pass
+        while self.num_timesteps < total_timesteps:
+            rollout = self.collect_rollouts(
+                self.env,
+                callback,
+                log_interval,
+            )
+            
+            if not rollout.continue_training:
+                break
+            
+            self.train(rollout)
         
+        callback.on_training_end()
+        
+        return self 
+            
+    def train(self, rollout: RolloutReturn) -> None:
+        """
+        Train the agent from a buffer of rollouts.
+        
+        :param rollout: The collected rollout.
+        """
+        raise NotImplementedError()
+        
+    def _sample_action(self, obs: np.ndarray) -> int:
+        """
+        Sample an action using an epsilon-greedy policy with function approximation.
+
+        :param obs: Current observation (state).
+        :return: Action to take in the environment.
+        """
+        if np.random.rand() < self.epsilon:  
+            return self.action_space.sample()
+        else:
+            q_values = self.policy.predict(obs)
+            return np.argmax(q_values)  
+
+    def _dump_logs(self) -> None:
+        """
+        Write log.
+        """
+        assert self.ep_info_buffer is not None
+        assert self.ep_success_buffer is not None
+
+        time_elapsed = max((time.time_ns() - self.start_time) / 1e9, sys.float_info.epsilon)
+        fps = int((self.num_timesteps - self._num_timesteps_at_start) / time_elapsed)
+        self.logger.record("time/episodes", self._episode_num, exclude="tensorboard")
+        if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
+            self.logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
+            self.logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
+        self.logger.record("time/fps", fps)
+        self.logger.record("time/time_elapsed", int(time_elapsed), exclude="tensorboard")
+        self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
+        if self.use_sde:
+            self.logger.record("train/std", (self.actor.get_std()).mean().item())
+
+        if len(self.ep_success_buffer) > 0:
+            self.logger.record("rollout/success_rate", safe_mean(self.ep_success_buffer))
+        # Pass the number of timesteps for tensorboard
+        self.logger.dump(step=self.num_timesteps)
+        
+    def _on_step(self) -> None:
+        """
+        Method called after each step in the environment.
+        It is meant to trigger DQN target network update
+        but can be used for other purposes
+        """
+        pass
+    
     def collect_rollouts(
         self,
         env: VecEnv,
@@ -190,19 +254,7 @@ class ClassicAgent(BaseAgent):
         return RolloutReturn(num_collected_steps, num_collected_episodes, continue_training)
 
     
-    def _sample_action(self, obs: np.ndarray) -> int:
-        """
-        Sample an action using an epsilon-greedy policy with function approximation.
-
-        :param obs: Current observation (state).
-        :return: Action to take in the environment.
-        """
-        if np.random.rand() < self.epsilon:  # Exploración
-            return self.env.action_space.sample()
-        else:  # Explotación
-            q_values = self.approximator.predict(obs)  # Obtener valores Q estimados
-            return np.argmax(q_values)  # Elegir la mejor acción
-
+    
         
         
         
