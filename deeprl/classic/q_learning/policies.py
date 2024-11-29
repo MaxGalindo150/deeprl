@@ -1,92 +1,68 @@
-# import numpy as np
-# from typing import Any, Dict, Optional, Tuple, Type, Union
-# from gymnasium import spaces
-# from deeprl.common.policies import BasePolicy
+import numpy as np
+from typing import Any, Dict, Optional, Tuple, Union
+from gymnasium import spaces
 
+from deeprl.common.policies import TabularModel
 
-# class TabularPolicy(BasePolicy):
-#     """
-#     A tabular policy for discrete state and action spaces, storing the Q-values explicitly.
+class QTable(TabularModel):
+    """
+    A Q-Table implementation for tabular reinforcement learning.
 
-#     :param observation_space: The observation space of the environment
-#     :param action_space: The action space of the environment
-#     :param learning_rate: Learning rate for updating Q-values
-#     :param gamma: Discount factor for future rewards
-#     :param epsilon: Exploration rate for epsilon-greedy policy
-#     :param optimizer_class: Ignored for tabular policies
-#     :param optimizer_kwargs: Ignored for tabular policies
-#     """
+    :param observation_space: The observation space of the environment.
+    :param action_space: The action space of the environment.
+    :param learning_rate: The learning rate for updating Q-values.
+    :param gamma: Discount factor for future rewards.
+    :param epsilon: Exploration rate for epsilon-greedy policy.
+    """
 
-#     def __init__(
-#         self,
-#         observation_space: spaces.Space,
-#         action_space: spaces.Space,
-#         learning_rate: float = 0.1,
-#         gamma: float = 0.99,
-#         epsilon: float = 1.0,
-#         features_extractor_class: Optional[Type] = None,  # Not used for tabular
-#         features_extractor_kwargs: Optional[Dict[str, Any]] = None,  # Not used for tabular
-#         normalize_images: bool = False,
-#         optimizer_class: Optional[Type] = None,  # Not used for tabular
-#         optimizer_kwargs: Optional[Dict[str, Any]] = None,  # Not used for tabular
-#     ):
-#         super().__init__(
-#             observation_space=observation_space,
-#             action_space=action_space,
-#             features_extractor_class=features_extractor_class,
-#             features_extractor_kwargs=features_extractor_kwargs,
-#             normalize_images=normalize_images,
-#         )
-#         # Ensure observation and action spaces are discrete
-#         assert isinstance(observation_space, spaces.Discrete), "TabularPolicy requires discrete observation space"
-#         assert isinstance(action_space, spaces.Discrete), "TabularPolicy requires discrete action space"
+    def __init__(
+        self,
+        observation_space: spaces.Space,
+        action_space: spaces.Space,
+        learning_rate: float = 0.1,
+        gamma: float = 0.99,
+        epsilon: float = 1.0,
+    ):
+        super().__init__(observation_space, action_space)
 
-#         self.learning_rate = learning_rate
-#         self.gamma = gamma
-#         self.epsilon = epsilon
+        self.learning_rate = learning_rate
+        self.gamma = gamma
+        self.epsilon = epsilon
 
-#         # Initialize the Q-table with zeros
-#         self.q_table = np.zeros((observation_space.n, action_space.n))
+        # Initialize Q-table with zeros
+        self.table = np.zeros((observation_space.n, action_space.n))
 
-#     def _predict(self, observation: np.ndarray, deterministic: bool = False) -> np.ndarray:
-#         """
-#         Select an action based on the policy (epsilon-greedy).
+    def predict(self, state: int, deterministic: bool = False) -> int:
+        """
+        Predict the next action using the Q-Table.
 
-#         :param observation: Current state (integer index).
-#         :param deterministic: If True, select the action with the highest Q-value.
-#         :return: Selected action.
-#         """
-#         if not deterministic and np.random.rand() < self.epsilon:
-#             # Explore: choose a random action
-#             return np.array(self.action_space.sample())
-#         else:
-#             # Exploit: choose the best action
-#             return np.array(np.argmax(self.q_table[observation]))
+        :param state: Current state as an integer index.
+        :param deterministic: Whether to select the action deterministically.
+        :return: Selected action as an integer.
+        """
+        if deterministic or np.random.rand() >= self.epsilon:
+            return np.argmax(self.table[state])
+        else:
+            return self.action_space.sample()
 
-#     def update(self, state: int, action: int, reward: float, next_state: int, done: bool) -> None:
-#         """
-#         Update the Q-value for the given state-action pair using the Q-learning update rule.
+    def update(self, state: int, action: int, reward: float, next_state: int, done: bool) -> None:
+        """
+        Update the Q-value for the given state-action pair using the Q-Learning update rule.
 
-#         :param state: Current state (integer index).
-#         :param action: Action taken.
-#         :param reward: Reward received.
-#         :param next_state: Next state (integer index).
-#         :param done: Whether the episode has terminated.
-#         """
-#         target = reward
-#         if not done:
-#             target += self.gamma * np.max(self.q_table[next_state])
-#         td_error = target - self.q_table[state, action]
-#         self.q_table[state, action] += self.learning_rate * td_error
+        :param state: Current state (integer index).
+        :param action: Action taken.
+        :param reward: Reward received.
+        :param next_state: Next state (integer index).
+        :param done: Whether the episode has terminated.
+        """
+        target = reward
+        if not done:
+            target += self.gamma * np.max(self.table[next_state])
 
-#     def reset_q_table(self) -> None:
-#         """Reset the Q-table to all zeros."""
-#         self.q_table = np.zeros_like(self.q_table)
+        self.table[state, action] += self.learning_rate * (target - self.table[state, action])
 
-#     def set_epsilon(self, epsilon: float) -> None:
-#         """
-#         Set the exploration rate.
-
-#         :param epsilon: New epsilon value.
-#         """
-#         self.epsilon = epsilon
+    def reset(self) -> None:
+        """
+        Reset the Q-table to all zeros.
+        """
+        self.table.fill(0)

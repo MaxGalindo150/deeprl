@@ -4,6 +4,7 @@ setup(
     name="deeprlearn",  
     version="0.1.0",  
     description="A reinforcement learning library for clasic and deep reinforcement learning research.",
+    package_data={"deeprl": ["py.typed", "version.txt"]},
     long_description=open("README.md").read(), 
     long_description_content_type="text/markdown", 
     author="Maximiliano Galindo",

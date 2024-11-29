@@ -17,7 +17,7 @@ from deeprl.common.env_util import is_wrapped
 from deeprl.common.logger import Logger
 from deeprl.common.monitor import Monitor
 from deeprl.common.noise import ActionNoise
-from deeprl.common.policies import BasePolicy
+from deeprl.common.policies import BasePolicy, BaseTabularPolicy
 from deeprl.common.preprocessing import check_for_nested_spaces, is_image_space, is_image_space_channels_first
 from deeprl.common.save_util import load_from_zip_file, recursive_getattr, recursive_setattr, save_to_zip_file
 from deeprl.common.type_aliases import GymEnv, MaybeCallback, Schedule, TensorDict
@@ -89,8 +89,8 @@ class BaseAgent(ABC):
     :param supported_action_spaces: The action spaces supported by the algorithm.
     """
     
-    policy_aliases: ClassVar[Dict[str, Type[BasePolicy]]] = {}
-    policy: BasePolicy
+    policy_aliases: ClassVar[Dict[str, Type[Union[BasePolicy, BaseTabularPolicy]]]] = {}
+    policy: Union[BasePolicy, BaseTabularPolicy]
     observation_space: spaces.Space
     action_space: spaces.Space
     n_envs: int
@@ -877,3 +877,5 @@ class BaseAgent(ABC):
         params_to_save = self.get_parameters()
 
         save_to_zip_file(path, data=data, params=params_to_save, pytorch_variables=pytorch_variables)
+
+

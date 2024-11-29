@@ -4,8 +4,7 @@ import os
 from deeprl.common.utils import get_system_info
 #from deeprl.ddpg import DDPG
 from deeprl.deep.dqn import DQN
-# from deeprl.classic.q_learning import QLearning
-# from deeprl.classic.q_learning.policies import QLearningPolicy # Clean this
+from deeprl.classic.q_learning.q_learning import QLearning
 from deeprl.her.her_replay_buffer import HerReplayBuffer
 #from deeprl.ppo import PPO
 #from deeprl.sac import SAC
@@ -13,6 +12,7 @@ from deeprl.her.her_replay_buffer import HerReplayBuffer
 
 # Read version from file
 version_file = os.path.join(os.path.dirname(__file__), "version.txt")
+
 with open(version_file) as file_handler:
     __version__ = file_handler.read().strip()
 
@@ -31,8 +31,7 @@ __all__ = [
     "PPO",
     "SAC",
     "TD3",
-#    "QLearning",
- #   "QLearningPolicy", # Clean this
+    "QLearning",
     "HerReplayBuffer",
     "get_system_info",
 ]

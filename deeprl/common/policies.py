@@ -415,5 +415,112 @@ class BasePolicy(BaseModel, ABC):
         low, high = self.action_space.low, self.action_space.high
         return low + (0.5 * (scaled_action + 1.0) * (high - low))
     
+class TabularModel(ABC):
+    """
+    The base class for tabular policies.
+
+    :param observation_space: The observation space of the environment
+    :param action_space: The action space of the environment
+    """
+
+    def __init__(self, observation_space: spaces.Space, action_space: spaces.Space):
+        self.observation_space = observation_space
+        self.action_space = action_space
+
+        # Validate that spaces are discrete
+        assert isinstance(observation_space, spaces.Discrete), "TabularModel only supports discrete observation spaces."
+        assert isinstance(action_space, spaces.Discrete), "TabularModel only supports discrete action spaces."
+
+    @abstractmethod
+    def predict(self, state: int, deterministic: bool = False) -> int:
+        """
+        Predict the next action given a state.
+        :param state: Current state as an integer index.
+        :param deterministic: Whether to select the action deterministically.
+        :return: Selected action as an integer.
+        """
+        pass
+
+class BaseTabularPolicy(TabularModel, ABC):
+    """
+    The base tabular policy object.
+    
+    Parameters are mostly the same as `TabularModel`; additions are documented below.
+    
+    :param args: positional arguments passed through to `TabularModel`.
+    :param kwargs: keyword arguments passed through to `TabularModel`.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    @staticmethod
+    def _dummy_schedule(progess_remaining: float) -> float:
+        """
+        (float) Useful for pickling the policy.
+        """
+        del progress_remaining
+        return 0.0
+    
+    @abstractmethod
+    def _predict(self, observation: PyTorchObs, deterministic: bool = False) -> th.Tensor:
+        """
+        Get the action according to the policy for a given observation.
+
+        By default provides a dummy implementation -- not all BasePolicy classes
+        implement this, e.g. if they are a Critic in an Actor-Critic method.
+
+        :param observation:
+        :param deterministic: Whether to use stochastic or deterministic actions
+        :return: Taken action according to the policy
+        """    
+    
+    def predict(
+        self,
+        observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        state: Optional[Tuple[np.ndarray, ...]] = None,
+        episode_start: Optional[np.ndarray] = None,
+        deterministic: bool = False,
+    ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
+        """
+        Get the policy action from an observation (and optional hidden state).
+        Includes sugar-coating to handle different observations (e.g. normalizing images).
+
+        :param observation: the input observation
+        :param state: The last hidden states (can be None, used in recurrent policies)
+        :param episode_start: The last masks (can be None, used in recurrent policies)
+            this correspond to beginning of episodes,
+            where the hidden states of the RNN must be reset.
+        :param deterministic: Whether or not to return deterministic actions.
+        :return: the model's action and the next hidden state
+            (used in recurrent policies)
+        """
+        
+        # Check for common mistake that the user does not mix Gym/VecEnv API
+        # Tuple obs are not supported by SB3, so we can safely do that check
+        if isinstance(observation, tuple) and len(observation) == 2 and isinstance(observation[1], dict):
+            raise ValueError(
+                "You have passed a tuple to the predict() function instead of a Numpy array or a Dict. "
+                "You are probably mixing Gym API with DeepRLearn VecEnv API: `obs, info = env.reset()` (Gym) "
+                "vs `obs = vec_env.reset()` (DeepRLearn VecEnv). "
+                "See related issue https://github.com/DLR-RM/stable-baselines3/issues/1694 "
+                "and documentation for more information: https://stable-baselines3.readthedocs.io/en/master/guide/vec_envs.html#vecenv-api-vs-gym-api"
+            )
+
+        obs_tensor, vectorized_env = self.obs_to_tensor(observation)
+
+        with th.no_grad():
+            actions = self._predict(obs_tensor, deterministic=deterministic)
+        # Convert to numpy, and reshape to the original action shape
+        actions = actions.cpu().numpy().reshape((-1, *self.action_space.shape))  # type: ignore[misc, assignment]
+
+        if isinstance(self.action_space, spaces.Box):
+            raise ValueError("Continuous action spaces are not supported by tabular policies.")
 
 
+        # Remove batch dimension if needed
+        if not vectorized_env:
+            assert isinstance(actions, np.ndarray)
+            actions = actions.squeeze(axis=0)
+
+        return actions, state  # type: ignore[return-value]

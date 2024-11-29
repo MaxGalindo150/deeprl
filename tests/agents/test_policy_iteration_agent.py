@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from gymnasium.envs.toy_text.frozen_lake import generate_random_map
-from deeprl.agents.policy_iteration_agent import PolicyIterationAgent
+from deeprl.classic.policy_iteration_agent import PolicyIterationAgent
 from deeprl.environments import GymnasiumEnvWrapper
 
 @pytest.fixture

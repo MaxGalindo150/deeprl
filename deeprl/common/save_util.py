@@ -328,7 +328,7 @@ def save_to_zip_file(
                 with archive.open(file_name + ".pth", mode="w", force_zip64=True) as param_file:
                     th.save(dict_, param_file)
         # Save metadata: library version when file was saved
-        archive.writestr("_stable_baselines3_version", deeprl.__version__)
+        archive.writestr("_deeprl", deeprl.__version__)
         # Save system info about the current python env
         archive.writestr("system_info.txt", get_system_info(print_info=False)[1])
 

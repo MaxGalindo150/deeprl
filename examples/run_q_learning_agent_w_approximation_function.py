@@ -1,5 +1,5 @@
 from deeprl.environments import GymnasiumEnvWrapper
-from deeprl.agents.q_learning_agent import QLearningAgent
+from deeprl.classic.q_learning_agent import QLearningAgent
 from deeprl.function_approximations import RBFBasisApproximator
 from deeprl.reward_shaping import MountainCarRewardShaping
 from deeprl.common.evaluate_policy import evaluate_policy
