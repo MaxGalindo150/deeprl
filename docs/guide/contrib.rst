@@ -1,3 +1,5 @@
+.. _contrib::
+
 Contributing to deeprl
 ======================
 
@@ -34,7 +36,7 @@ We are excited that you are interested in contributing to deeprl! Contributions 
 
    .. code-block:: bash
 
-       pip install -e .[dev]
+       pip install -e .[docs,tests,extra]
 
 **Coding Standards:**
 ---------------------
