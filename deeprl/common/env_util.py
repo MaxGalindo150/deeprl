@@ -48,6 +48,7 @@ def make_vec_env(
     vec_env_kwargs: Optional[Dict[str, Any]] = None,
     monitor_kwargs: Optional[Dict[str, Any]] = None,
     wrapper_kwargs: Optional[Dict[str, Any]] = None,
+    is_atari: bool = False,
 ) -> VecEnv:
     """
     Create a wrapped, monitored ``VecEnv``.
@@ -91,9 +92,21 @@ def make_vec_env(
                 kwargs = {"render_mode": "rgb_array"}
                 kwargs.update(env_kwargs)
                 try:
-                    env = gym.make(env_id, **kwargs)  # type: ignore[arg-type]
+                    if is_atari:
+                        import ale_py
+                        
+                        gym.register_envs(ale_py)
+                        env = gym.make(env_id, **kwargs)
+                    else:
+                        env = gym.make(env_id, **kwargs)  # type: ignore[arg-type]
                 except TypeError:
-                    env = gym.make(env_id, **env_kwargs)
+                    if is_atari:
+                        import ale_py
+                        
+                        gym.register_envs(ale_py)
+                        env = gym.make(env_id, **kwargs)
+                    else:
+                        env = gym.make(env_id, **kwargs)  # type: ignore[arg-type]
             else:
                 env = env_id(**env_kwargs)
                 # Patch to support gym 0.21/0.26 and gymnasium
@@ -170,4 +183,5 @@ def make_atari_env(
         vec_env_kwargs=vec_env_kwargs,
         monitor_kwargs=monitor_kwargs,
         wrapper_kwargs=wrapper_kwargs,
+        is_atari=True,
     )

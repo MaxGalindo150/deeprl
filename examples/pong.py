@@ -17,3 +17,5 @@ while True:
     action, _states = model.predict(obs, deterministic=False)
     obs, rewards, dones, info = vec_env.step(action)
     vec_env.render("human")
+
+
