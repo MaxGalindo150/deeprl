@@ -682,7 +682,7 @@ class StopTrainingOnNoModelImprovement(BaseCallback):
 
 class ProgressBarCallback(BaseCallback):
     """
-    Display a progress bar when training SB3 agent
+    Display a progress bar when training DRL agent
     using tqdm and rich packages.
     """
 
@@ -694,7 +694,7 @@ class ProgressBarCallback(BaseCallback):
             raise ImportError(
                 "You must install tqdm and rich in order to use the progress bar callback. "
                 "It is included if you install stable-baselines with the extra packages: "
-                "`pip install stable-baselines3[extra]`"
+                "`pip install deeprl[extra]`"
             )
 
     def _on_training_start(self) -> None:

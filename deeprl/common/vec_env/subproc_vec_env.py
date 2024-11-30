@@ -32,7 +32,7 @@ def _worker(
             cmd, data = remote.recv()
             if cmd == "step":
                 observation, reward, terminated, truncated, info = env.step(data)
-                # convert to SB3 VecEnv api
+                # convert to DRL VecEnv api
                 done = terminated or truncated
                 info["TimeLimit.truncated"] = truncated and not terminated
                 if done:

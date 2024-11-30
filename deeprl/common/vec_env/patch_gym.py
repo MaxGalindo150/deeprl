@@ -41,15 +41,15 @@ def _patch_env(env: Union["gym.Env", gymnasium.Env]) -> gymnasium.Env:  # pragma
     except ImportError as e:
         raise ImportError(
             "Missing shimmy installation. You provided an OpenAI Gym environment. "
-            "Stable-Baselines3 (SB3) has transitioned to using Gymnasium internally. "
-            "In order to use OpenAI Gym environments with SB3, you need to "
+            "deeprl has transitioned to using Gymnasium internally. "
+            "In order to use OpenAI Gym environments with DRL, you need to "
             "install shimmy (`pip install 'shimmy>=2.0'`)."
         ) from e
 
     warnings.warn(
         "You provided an OpenAI Gym environment. "
         "We strongly recommend transitioning to Gymnasium environments. "
-        "Stable-Baselines3 is automatically wrapping your environments in a compatibility "
+        "deeprl is automatically wrapping your environments in a compatibility "
         "layer, which could potentially cause issues."
     )
 
@@ -87,8 +87,8 @@ def _convert_space(space: Union["gym.Space", gymnasium.Space]) -> gymnasium.Spac
     except ImportError as e:
         raise ImportError(
             "Missing shimmy installation. You provided an OpenAI Gym space. "
-            "Stable-Baselines3 (SB3) has transitioned to using Gymnasium internally. "
-            "In order to use OpenAI Gym space with SB3, you need to "
+            "deeprl has transitioned to using Gymnasium internally. "
+            "In order to use OpenAI Gym space with DRL, you need to "
             "install shimmy (`pip install 'shimmy>=0.2.1'`)."
         ) from e
 

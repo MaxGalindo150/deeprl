@@ -58,7 +58,7 @@ class DummyVecEnv(VecEnv):
             obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(
                 self.actions[env_idx]
             )
-            # convert to SB3 VecEnv api
+            # convert to DRL VecEnv api
             self.buf_dones[env_idx] = terminated or truncated
             # See https://github.com/openai/gym/issues/3102
             # Gym 0.26 introduces a breaking change
