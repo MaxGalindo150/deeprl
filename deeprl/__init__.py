@@ -19,8 +19,8 @@ with open(version_file) as file_handler:
 
 def HER(*args, **kwargs):
     raise ImportError(
-        "Since Stable Baselines 2.1.0, `HER` is now a replay buffer class `HerReplayBuffer`.\n "
-        "Please check the documentation for more information: https://stable-baselines3.readthedocs.io/"
+        "`HER` is now a replay buffer class `HerReplayBuffer`.\n "
+        "Please check the documentation for more information: http://deeprl.sytes.net/"
     )
 
 

@@ -14,11 +14,55 @@ setup(
     packages=find_packages(),  # Encuentra automáticamente todos los paquetes
     include_package_data=True,  # Incluye archivos definidos en MANIFEST.in
     install_requires=[
-        "gymnasium>=0.27.0",
-        "torch>=1.10.0",
-        "numpy>=1.21.0",
-        "scikit-learn>=0.24.0",
+        "gymnasium>=0.29.1,<1.1.0",
+        "numpy>=1.20,<3.0",
+        "torch>=2.3,<3.0",
+        # For saving models
+        "cloudpickle",
+        # For reading logs
+        "pandas",
+        # Plotting learning curves
+        "matplotlib",
     ],
+        extras_require={
+        "tests": [
+            # Run tests and coverage
+            "pytest",
+            "pytest-cov",
+            "pytest-env",
+            "pytest-xdist",
+            # Type check
+            "mypy",
+            # Lint code and sort imports (flake8 and isort replacement)
+            "ruff>=0.3.1",
+            # Reformat
+            "black>=24.2.0,<25",
+        ],
+        "docs": [
+            "sphinx>=5,<9",
+            "sphinx-autobuild",
+            "sphinx-rtd-theme>=1.3.0",
+            # For spelling
+            "sphinxcontrib.spelling",
+            # Copy button for code snippets
+            "sphinx_copybutton",
+        ],
+        "extra": [
+            # For render
+            "opencv-python",
+            "pygame",
+            # Tensorboard support
+            "tensorboard>=2.9.1",
+            # Checking memory taken by replay buffer
+            "psutil",
+            # For progress bar callback
+            "tqdm",
+            "rich",
+            # For atari games,
+            "ale-py>=0.9.0",
+            "pillow",
+        ],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -228,7 +228,7 @@ class OffPolicyAgent(BaseAgent):
         self.replay_buffer = load_from_pkl(path, self.verbose)
         assert isinstance(self.replay_buffer, ReplayBuffer), "The replay buffer must inherit from ReplayBuffer class"
 
-        # Backward compatibility with SB3 < 2.1.0 replay buffer
+        # Backward compatibility with DRL < 0.1.0 replay buffer
         # Keep old behavior: do not handle timeout termination separately
         if not hasattr(self.replay_buffer, "handle_timeout_termination"):  # pragma: no cover
             self.replay_buffer.handle_timeout_termination = False

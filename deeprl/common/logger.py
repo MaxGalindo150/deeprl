@@ -640,21 +640,21 @@ def configure(folder: Optional[str] = None, format_strings: Optional[List[str]] 
     Configure the current logger.
 
     :param folder: the save location
-        (if None, $SB3_LOGDIR, if still None, tempdir/SB3-[date & time])
+        (if None, $DRL_LOGDIR, if still None, tempdir/DRL-[date & time])
     :param format_strings: the output logging format
-        (if None, $SB3_LOG_FORMAT, if still None, ['stdout', 'log', 'csv'])
+        (if None, $DRL_LOG_FORMAT, if still None, ['stdout', 'log', 'csv'])
     :return: The logger object.
     """
     if folder is None:
-        folder = os.getenv("SB3_LOGDIR")
+        folder = os.getenv("DRL_LOGDIR")
     if folder is None:
-        folder = os.path.join(tempfile.gettempdir(), datetime.datetime.now().strftime("SB3-%Y-%m-%d-%H-%M-%S-%f"))
+        folder = os.path.join(tempfile.gettempdir(), datetime.datetime.now().strftime("DRL-%Y-%m-%d-%H-%M-%S-%f"))
     assert isinstance(folder, str)
     os.makedirs(folder, exist_ok=True)
 
     log_suffix = ""
     if format_strings is None:
-        format_strings = os.getenv("SB3_LOG_FORMAT", "stdout,log,csv").split(",")
+        format_strings = os.getenv("DRL_LOG_FORMAT", "stdout,log,csv").split(",")
 
     format_strings = list(filter(None, format_strings))
     output_formats = [make_output_format(f, folder, log_suffix) for f in format_strings]

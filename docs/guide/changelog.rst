@@ -11,16 +11,16 @@ Unreleased
 - **Policy module**:
   - ``SoftmaxPolicy`` for stochastic action selection based on action preferences.
 - **Deep RL algorithms**:
-  - ``DQNAgent`` (Deep Q-Network) for continuous and high-dimensional state spaces.
-  - ``PPOAgent`` (Proximal Policy Optimization) for policy gradient optimization.
-  - ``A3CAgent`` (Asynchronous Advantage Actor-Critic) for distributed learning.
-  - ``SACAgent`` (Soft Actor-Critic) for maximum entropy reinforcement learning.
-  - ``DDPGAgent`` (Deep Deterministic Policy Gradient) for continuous action spaces.
+  - ``DQN`` (Deep Q-Network) for continuous and high-dimensional state spaces.
+  - ``PPO`` (Proximal Policy Optimization) for policy gradient optimization.
+  - ``A3C`` (Asynchronous Advantage Actor-Critic) for distributed learning.
+  - ``SAC`` (Soft Actor-Critic) for maximum entropy reinforcement learning.
+  - ``DDPG`` (Deep Deterministic Policy Gradient) for continuous action spaces.
 - **Neural networks module**:
   - Utilities for creating custom neural networks using PyTorch.
   - Predefined architectures for DQN, PPO, and SAC agents.
 - **Examples**:
-  - Deep RL examples showcasing the training of ``DQNAgent`` in ``CartPole``.
+  - Deep RL examples showcasing the training of ``DQN`` in ``CartPole``.
   - PPO implementation with custom reward shaping in continuous control environments like ``LunarLanderContinuous``.
 
 **Changed**

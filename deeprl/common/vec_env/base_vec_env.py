@@ -85,7 +85,7 @@ class VecEnv(ABC):
         render_modes = []
         if self.render_mode is not None:
             if self.render_mode == "rgb_array":
-                # SB3 uses OpenCV for the "human" mode
+                # DRL uses OpenCV for the "human" mode
                 render_modes = ["human", "rgb_array"]
             else:
                 render_modes = [self.render_mode]
