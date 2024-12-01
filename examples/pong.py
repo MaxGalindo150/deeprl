@@ -5,7 +5,7 @@ from deeprl import DQN
 # There already exists an environment generator
 # that will make and wrap atari environments correctly.
 # Here we are also multi-worker training (n_envs=4 => 4 environments)
-vec_env = make_atari_env("ALE/Pong-v5", n_envs=4, seed=0)
+vec_env = make_atari_env("ALE/SpaceInvaders-v5", n_envs=1)
 # Frame-stacking with 4 frames
 vec_env = VecFrameStack(vec_env, n_stack=4)
 
