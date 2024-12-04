@@ -605,7 +605,7 @@ class ActorCriticPolicy(BasePolicy):
                 "you should pase a dictionary and not a list "
                 "(net_arch=dict(pi=..., vf=...) instead of net_arch=[dict(pi=..., vf=...)])."
             )
-        net_arch = net_arch[0]
+            net_arch = net_arch[0]
         
         # Default network architecture, from DeepRLearn
         if net_arch is None:
