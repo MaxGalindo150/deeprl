@@ -130,5 +130,5 @@ For inquiries or collaboration, feel free to reach out:
 
 - **Author**: Maximiliano Galindo  
 - **Email**: [maximilianogalindo7@gmail.com](mailto:maximilianogalindo7@gmail.com)  
-- **Organization**: [EigenCore](https://eigen.core)  
+- **Organization**: [EigenCore](https://github.com/eigencore)  
 
