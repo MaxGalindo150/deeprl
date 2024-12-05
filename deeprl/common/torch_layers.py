@@ -189,7 +189,7 @@ class MlpExtractor(nn.Module):
 
     The ``net_arch`` parameter allows to specify the amount and size of the hidden layers.
     It can be in either of the following forms:
-    1. ``dict(vf=[<list of layer sizes>], pi=[<list of layer sizes>])``: to specify the amount and size of the layers in the
+    1. ``dict(pi=[<list of layer sizes>], vf=[<list of layer sizes>])``: to specify the amount and size of the layers in the
         policy and value nets individually. If it is missing any of the keys (pi or vf),
         zero layers will be considered for that key.
     2. ``[<list of layer sizes>]``: "shortcut" in case the amount and size of the layers
