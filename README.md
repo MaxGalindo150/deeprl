@@ -1,6 +1,3 @@
-Here's the revised version in English:
-
----
 
 # deeprlearn
 
@@ -135,6 +132,3 @@ For inquiries or collaboration, feel free to reach out:
 - **Email**: [maximilianogalindo7@gmail.com](mailto:maximilianogalindo7@gmail.com)  
 - **Organization**: [EigenCore](https://eigen.core)  
 
---- 
-
-With this structure, your library's expanding features and vision are clearly communicated, following the style and format of popular projects like SB3.
