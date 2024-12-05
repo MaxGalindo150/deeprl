@@ -1,124 +1,111 @@
+Here's the revised version in English:
+
+---
+
 # deeprlearn
 
-[![PyPI version](https://badge.fury.io/py/deeprl.svg)](https://badge.fury.io/py/deeprlearn)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/deeprlearn.svg)](https://badge.fury.io/py/deeprlearn)  
+<!-- [![CI](https://github.com/MaxGalindo150/deeprl/workflows/CI/badge.svg)](https://github.com/MaxGalindo150/deeprl/actions/workflows/ci.yml)  
+[![Documentation Status](https://readthedocs.org/projects/deeprlearn/badge/?version=latest)](https://deeprlearn.readthedocs.io/en/latest/?badge=latest)   -->
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)  
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-**deeprlearn** is a modular reinforcement learning library built on PyTorch. Designed for researchers and developers, it provides a robust framework to experiment with, implement, and optimize RL algorithms for small to medium-scale environments. Check out the [documentation](http://deeprl.sytes.net/) for more details.
+---
+
+<img src="docs/static/img/logo.png" align="right" width="40%"/>
+
+**deeprlearn** is a modular reinforcement learning library built on **PyTorch** and heavily inspired by the architecture of **Stable-Baselines3 (SB3)**. Initially designed for single-agent algorithms, **deeprlearn** is now expanding to support **multi-agent reinforcement learning (MARL)** and **multi-objective tasks**, enabling solutions for more complex and interactive problems.
+
+This project is being developed by **Maximiliano Galindo** and **EigenCore**, aiming to provide an accessible and powerful tool for researchers and developers.
 
 ---
 
 ## Key Features
 
-- **Dynamic Programming Agents**:
-  - Implementation of **Value Iteration** and **Policy Iteration** algorithms.
-- **Function Approximations**:
-  - Support for linear and non-linear function approximation using techniques like **Radial Basis Functions (RBF)**, **Polynomial Features**, and **Neural Networks**.
-- **Reward Shaping**:
-  - Includes strategies like **Distance-Based Shaping**, **Potential-Based Shaping**, and **Step Penalty Shaping** to improve learning in sparse reward environments.
-- **Seamless Integration**:
-  - Compatible with **Gymnasium environments**, simplifying the setup and testing of RL agents.
-- **Progress Monitoring**:
-  - Verbose mode for tracking rewards, steps, and exploration rates during training.
-- **Model Persistence**:
-  - Save and load models easily for reproducibility and testing.
+| **Feature**                      | **Current Status**    |
+| --------------------------------- | --------------------- |
+| State-of-the-art RL methods       | :heavy_check_mark:    |
+| Documentation                     | :heavy_check_mark:    |
+| Support for custom environments   | :heavy_check_mark:    |
+| Custom policies                   | :heavy_check_mark:    |
+| Common interface                  | :heavy_check_mark:    |
+| Multi-objective task support      | :construction: *(In Progress)* |
+| Multi-agent learning (MARL)       | :construction: *(In Progress)* |
+| Gymnasium compatibility           | :heavy_check_mark:    |
+| IPython/Notebook friendly         | :heavy_check_mark:    |
+| TensorBoard support               | :heavy_check_mark:    |
+| PEP8 code style                   | :heavy_check_mark:    |
+| Custom callbacks                  | :heavy_check_mark:    |
+| High test coverage                | :construction: *(Expanding)* |
+| Type hints                        | :heavy_check_mark:    |
+
+---
+
+## Expansion to Multi-Agent and Multi-Objective Learning
+
+**deeprlearn** is actively being expanded to include:
+
+1. **Multi-Agent Reinforcement Learning (MARL)**:
+   - Initial implementations of algorithms like **Multi-Agent PPO (MAPPO)** and **MADDPG**.
+   - Support for complex interaction environments, compatible with **PettingZoo** and custom-built environments.
+   - Centralized training and decentralized execution for cooperative and competitive scenarios.
+
+2. **Multi-Objective Tasks**:
+   - Policy optimization for conflicting objectives using approaches such as:
+     - Objective weighting.
+     - Pareto fronts for non-dominated solutions.
+   - Designed for problems in ecological simulations, traffic systems, and urban planning.
 
 ---
 
 ## Installation
 
-Install **deeprl** directly from PyPI:
+**Note:** **deeprlearn** requires Python 3.9 or higher.
 
+Install directly from PyPI:
 ```bash
 pip install deeprlearn
 ```
 
-### Requirements
-
-- Python 3.9 or higher
-- Dependencies:
-  - NumPy
-  - PyTorch
-  - Gymnasium
-  - Scikit-learn
-
 ---
 
-## Quick Start
+## Quick Start Example
 
-Here’s how to train a **Q-Learning** agent on the `MountainCar` environment:
+Train a **Q-Learning** agent in the `MountainCar` environment:
 
 ```python
-from deeprl.environments import GymnasiumEnvWrapper
-from deeprl.agents.q_learning_agent import QLearningAgent
-from deeprl.function_approximations import RBFBasisApproximator
-from deeprl.reward_shaping import MountainCarRewardShaping
+import gymnasium as gym
+from deeprl import PPO
+from deeprl.common.env_util import make_vec_env
 
-def main():
-    
-    # Initialize the environment and approximator
-    env = GymnasiumEnvWrapper('MountainCar-v0')
-    approximator = RBFBasisApproximator(env=env, gamma=0.5, n_components=500)
-        
-    agent = QLearningAgent(
-        env=env,
-        learning_rate=0.1,
-        discount_factor=0.99,
-        is_continuous=True,
-        approximator=approximator,
-        reward_shaping=MountainCarRewardShaping(),
-        verbose=True
-    )
-    
-    # Train the agent
-    agent.learn(episodes=10000, max_steps=10000, save_train_graph=True)
-    
-    # Evaluate the agent
-    rewards = agent.interact(episodes=10, render=True, save_test_graph=True)
+# Parallel environments
+vec_env = make_vec_env("CartPole-v1", n_envs=4)
 
-if __name__ == '__main__':
-    main()
+model = PPO("MlpPolicy", vec_env, verbose=1)
+model.learn(total_timesteps=25000)
+model.save("ppo_cartpole")
+
+del model # remove to demonstrate saving and loading
+
+model = PPO.load("ppo_cartpole")
+obs = vec_env.reset()
+while True:
+    action, _states = model.predict(obs)
+    obs, rewards, dones, info = vec_env.step(action)
+    vec_env.render("human")
 ```
 
 ---
 
-## Features Overview
+## Documentation
 
-### 1. Dynamic Programming Agents
-- **ValueIterationAgent**: Uses the Value Iteration algorithm to compute the optimal policy.
-- **PolicyIterationAgent**: Implements the Policy Iteration algorithm for policy optimization.
-
-### 2. Function Approximations
-Support for approximating value functions or policies using:
-- **Linear Approximators**: Efficient for linearly separable problems.
-- **Radial Basis Function (RBF) Approximators**: Captures non-linear patterns in continuous spaces.
-- **Polynomial Approximators**: Expands features for higher-dimensional representation.
-- **Neural Network Approximators**: For complex, non-linear function approximation.
-
-### 3. Reward Shaping
-Enhance learning in sparse or uninformative environments with:
-- **Distance-Based Shaping**: Rewards progress toward a specific goal.
-- **Potential-Based Shaping**: Ensures policy invariance while guiding exploration.
-- **Step Penalty Shaping**: Penalizes excessive steps to encourage efficiency.
-
-### 4. Integration with Gymnasium
-Easily integrate with a wide range of Gymnasium environments, supporting both discrete and continuous action/state spaces.
-
-### 5. Saving and Loading Agents
-Persist agent parameters for reproducibility or testing:
-
-```python
-# Save the agent's parameters
-agent.save('value_iteration_agent.pkl')
-
-# Load the agent's parameters
-agent.load('value_iteration_agent.pkl')
-```
+Detailed documentation is available online: [deeprlearn Documentation](http://deeprl.sytes.net/).
 
 ---
 
 ## Contribution Guidelines
 
-Contributions are welcome! To contribute, follow these steps:
+We welcome contributions! To contribute:
 
 1. **Fork the repository**:
    ```bash
@@ -128,7 +115,7 @@ Contributions are welcome! To contribute, follow these steps:
    ```bash
    git checkout -b feature/new-feature
    ```
-3. **Make your changes and commit**:
+3. **Make changes and commit**:
    ```bash
    git commit -am 'Add new feature'
    ```
@@ -140,17 +127,14 @@ Contributions are welcome! To contribute, follow these steps:
 
 ---
 
-## License
-
-This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/MaxGalindo150/deeprl/blob/main/LICENSE) file for more details.
-
----
-
 ## Contact
 
 For inquiries or collaboration, feel free to reach out:
 
 - **Author**: Maximiliano Galindo  
-- **Email**: [maximilianogalindo7@gmail.com](mailto:maximilianogalindo7@gmail.com)
+- **Email**: [maximilianogalindo7@gmail.com](mailto:maximilianogalindo7@gmail.com)  
+- **Organization**: [EigenCore](https://eigen.core)  
 
+--- 
 
+With this structure, your library's expanding features and vision are clearly communicated, following the style and format of popular projects like SB3.
