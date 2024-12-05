@@ -12,7 +12,7 @@ Here's the revised version in English:
 
 ---
 
-<img src="docs/static/img/logo.png" align="right" width="40%"/>
+<!-- <img src="docs/static/img/logo.png" align="right" width="40%"/> -->
 
 **deeprlearn** is a modular reinforcement learning library built on **PyTorch** and heavily inspired by the architecture of **Stable-Baselines3 (SB3)**. Initially designed for single-agent algorithms, **deeprlearn** is now expanding to support **multi-agent reinforcement learning (MARL)** and **multi-objective tasks**, enabling solutions for more complex and interactive problems.
 
