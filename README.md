@@ -68,7 +68,7 @@ pip install deeprlearn
 
 ## Quick Start Example
 
-Train a **Q-Learning** agent in the `MountainCar` environment:
+Train a **PPO** agent in the `CartPole` environment:
 
 ```python
 import gymnasium as gym
