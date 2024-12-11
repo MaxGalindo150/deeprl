@@ -1,7 +1,7 @@
 import supersuit as ss
 from gymnasium.spaces import Box
 from pettingzoo.utils.conversions import parallel_wrapper_fn
-from deeprl.marl.envs.vector_constructors import concat_vec_envs_v1
+from deeprl.marl.common.vec_env.vector_constructors import concat_vec_envs_v1
 
 
 def make_marl_env(env_fn, num_vec_envs=8, num_cpus=1, visual_preprocessing=True, **env_kwargs):

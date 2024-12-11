@@ -7,7 +7,7 @@ import time
 import supersuit as ss
 from deeprl import PPO
 from deeprl.deep.ppo import CnnPolicy, MlpPolicy
-from deeprl.marl.envs.vector_constructors import concat_vec_envs_v1
+from deeprl.marl.common.vec_env.vector_constructors import concat_vec_envs_v1
 
 from pettingzoo.mpe import simple_spread_v3
 

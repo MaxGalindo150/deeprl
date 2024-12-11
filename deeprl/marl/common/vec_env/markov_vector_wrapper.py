@@ -6,9 +6,9 @@ from gymnasium.vector.utils import concatenate, create_empty_array, iterate
 class MarkovVectorEnv(gymnasium.vector.VectorEnv):
     def __init__(self, par_env, black_death=False):
         """
-        parameters:
-            - par_env: the pettingzoo Parallel environment that will be converted to a gymnasium vector environment
-            - black_death: whether to give zero valued observations and 0 rewards when an agent is done, allowing for environments with multiple numbers of agents.
+    
+        :param par_env: the pettingzoo Parallel environment that will be converted to a gymnasium vector environment
+        :param black_death: whether to give zero valued observations and 0 rewards when an agent is done, allowing for environments with multiple numbers of agents.
                             Is equivalent to adding the black death wrapper, but somewhat more efficient.
 
         The resulting object will be a valid vector environment that has a num_envs

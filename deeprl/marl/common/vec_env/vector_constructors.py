@@ -3,7 +3,7 @@ import warnings
 import cloudpickle
 import gymnasium
 from pettingzoo.utils.env import ParallelEnv
-from .deeprl_vector_wrapper import DeeprlVecEnvWrapper
+from .pettingzoo_vector_wrapper import PettingZooVecEnvWrapper
 from .constructors import MakeCPUAsyncConstructor
 from .markov_vector_wrapper import MarkovVectorEnv
 
@@ -50,7 +50,7 @@ def concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0):
     num_cpus = min(num_cpus, num_vec_envs)
     vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(vec_env, num_vec_envs))
         
-    return DeeprlVecEnvWrapper(vec_env)
+    return PettingZooVecEnvWrapper(vec_env)
     
 
 def pettingzoo_env_to_vec_env_v1(parallel_env):

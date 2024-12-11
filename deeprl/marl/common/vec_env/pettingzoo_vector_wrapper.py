@@ -6,7 +6,7 @@ from deeprl.common.vec_env import VecEnvWrapper
 from deeprl.common.vec_env.base_vec_env import VecEnvIndices
 
 
-class DeeprlVecEnvWrapper(VecEnvWrapper):
+class PettingZooVecEnvWrapper(VecEnvWrapper):
     def __init__(self, venv):
         self.venv = venv
         self.num_envs = venv.num_envs

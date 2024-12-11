@@ -17,4 +17,4 @@ def make_marl_vec_env(
     monitor_kwargs: Optional[dict[str, Any]] = None,
     wrapper_kwargs: Optional[dict[str, Any]] = None,
     is_atari: bool = False,
-)
+)-> VecEnv:
