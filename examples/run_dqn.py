@@ -1,8 +1,11 @@
 import gymnasium as gym
 import imageio
 from deeprl import DQN
+from deeprl.common.monitor import Monitor
 
 env = gym.make("CartPole-v1", render_mode="rgb_array")
+
+env = Monitor(env, filename="cartpole_dqn")
 
 model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=1_000_000)

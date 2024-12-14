@@ -35,4 +35,26 @@ def test_marl_monitor():
     assert "length" in df.columns, "Log file missing 'length' column"
     print("All tests passed!")
 
+def test_monitor():
+    import gymnasium as gym
+    from deeprl.common.monitor import Monitor
+    
+    env = gym.make("CartPole-v1", render_mode="rgb_array")
+
+    env = Monitor(env, filename="cartpole_dqn")
+    
+    observations = env.reset()
+    done = False
+    
+    while not done:
+        action = env.action_space.sample()
+        observations, reward, done, truncated, info = env.step(action)
+        
+    env.close()
+    
+    
+
+
+
 test_marl_monitor()
+#test_monitor()
